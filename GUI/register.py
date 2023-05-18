@@ -4,7 +4,10 @@ import customtkinter
 
 
 class RegisterWindow(customtkinter.CTk):
-    def __init__(self):
+    def __init__(self, edit=False, admin=False):
+        self.edit = edit
+        self.admin = admin
+
         super().__init__()
         self.geometry("500x300")
         self.resizable(0, 0)
@@ -33,11 +36,33 @@ class RegisterWindow(customtkinter.CTk):
         self.passwordReEntry = customtkinter.CTkEntry(master=self.formFrame, show="*", placeholder_text="Re-Enter Password", height=40, width=225)
         self.passwordReEntry.place(relx=0.75, rely=0.675, anchor=tkinter.CENTER)
 
-        self.registerButton = customtkinter.CTkButton(master=self.formFrame, text="Register", command=self.registerFunctionFunction, height=40, width=225)
+        self.registerButton = customtkinter.CTkButton(master=self.formFrame, text="Register", command=self.registerFunction, height=40, width=225)
         self.registerButton.place(relx=0.75, rely=0.9, anchor=tkinter.CENTER)
 
         self.backButton = customtkinter.CTkButton(master=self.formFrame, text="Go Back", command=self.backFunction, height=40, width=80)
         self.backButton.place(relx=0.1, rely=0.9, anchor=tkinter.CENTER)
+
+        if self.edit:
+            self.loadData()
+
+    def loadData(self):
+        self.adminCheck.destroy()
+
+        self.phoneEntry.place(relx=0.75, rely=0.5, anchor=tkinter.CENTER)
+        self.phoneEntry.configure(width=225)
+
+        self.eMailEntry.insert(0, "yousefalzayat02@yahoo.com")
+        self.eMailEntry.configure(width=225)
+        self.eMailEntry.place(relx=0.25)
+
+        if self.admin == False:
+            self.nameEntry.insert(0, "Yousef Ahmed AlZayat")
+            self.phoneEntry.insert(0, "01002684347")
+        else:
+            self.nameEntry.configure(state="disabled")
+            self.phoneEntry.configure(state="disabled")
+
+
 
     def adminCheckToggled(self):
         if self.adminCheck.get():
@@ -47,8 +72,14 @@ class RegisterWindow(customtkinter.CTk):
             self.phoneEntry.configure(state="normal", placeholder_text="Phone Number")
             self.nameEntry.configure(state="normal", placeholder_text="Name")
 
-    def registerFunctionFunction(self):
-        print("Button Pressed admin window")
+    def registerFunction(self):
+
+        if self.edit == True:
+            print("Update...")
+
+        else:
+            print("Register...")
+
         self.backFunction()
 
     def backFunction(self):
