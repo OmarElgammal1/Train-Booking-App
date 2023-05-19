@@ -68,10 +68,18 @@ def viewCustomerTrips(customerID):
     cursor.close()
     conn.close()
 
-    # ! TODO: split DATETIME and add it correctly to list
+    # ! split DATETIME and add it correctly to list
     # Convert the rows to a Python list
     result_list = []
     for row in rows:
-        result_list.append(list(row))
+        row = [str(x).split(" ") for x in row]
+        res = []
+        for el in row:
+            if len(el) > 1:
+                res.append(el[0])
+                res.append(el[1])
+            else:
+                res.append(el[0])
+        result_list.append(res)
 
     return result_list;
