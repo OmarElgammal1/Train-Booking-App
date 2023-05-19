@@ -8,18 +8,8 @@ class RegisterWindow(customtkinter.CTk):
         self.edit = edit
         self.admin = admin
         self.email = email
-        
-        title = ""
-        if edit:
-            title = "Edit"
-        else:
-            title = "Register"
 
         super().__init__()
-
-        self.admin = admin
-        self.email = email
-        self.edit = edit
 
         title = ""
         if edit:
@@ -63,19 +53,26 @@ class RegisterWindow(customtkinter.CTk):
         if self.edit:
             self.loadData()
 
+            self.eMailEntry.configure(width=225)    
+            self.eMailEntry.place(relx=0.25)
+            self.adminCheck.destroy()
+            self.phoneEntry.configure(width=225)
+            self.phoneEntry.place(relx=0.75, rely=0.5, anchor=tkinter.CENTER)
+
     def loadData(self):
-        self.adminCheck.destroy()
 
-        self.phoneEntry.place(relx=0.75, rely=0.5, anchor=tkinter.CENTER)
-        self.phoneEntry.configure(width=225)
-
-        self.eMailEntry.insert(0, "yousefalzayat02@yahoo.com")
-        self.eMailEntry.configure(width=225)
-        self.eMailEntry.place(relx=0.25)
+        from userSQL import getInfo
+        from connect import connect
+        conn = connect("Zayat")
+        data = getInfo(conn, conn.cursor(), self.email, self.admin)
+        print(data)
 
         if self.admin == False:
-            self.nameEntry.insert(0, "Yousef Ahmed AlZayat")
-            self.phoneEntry.insert(0, "01002684347")
+            self.eMailEntry.insert(0, data[3])
+            self.passwordReEntry.insert(0, data[4])
+            self.passwordEntry.insert(0, data[4])
+            self.nameEntry.insert(0, data[1])
+            self.phoneEntry.insert(0, data[2])
         else:
             self.nameEntry.configure(state="disabled")
             self.phoneEntry.configure(state="disabled")
@@ -122,5 +119,5 @@ class RegisterWindow(customtkinter.CTk):
         app.mainloop()
 
 if __name__ == "__main__":
-    test = RegisterWindow()
+    test = RegisterWindow(False, False, "mohamad@gmail.com")
     test.mainloop()
