@@ -6,12 +6,16 @@ def viewTrips(conn, cursor):
 
     query = """select * from trip"""
     data = pnda.read_sql(query, conn, ).to_dict()
-
     trips = []
 
     for i in data["tripID"]:
         # print(data["tripID"][i])
-        trips.append([data["tripID"][i], data["trainID"][i], data["fromLocation"][i], data["toLocation"][i], data["depTime"][i], data["price"][i]])
+        date = str(data["depTime"][i]).split(' ')
+        date[1] = date[1].split('.')
+        trainSeats = pnda.read_sql("""select seatCount from train
+        where trainID = """ + str(data["trainID"][i]), conn, ).to_dict()
+
+        trips.append([data["tripID"][i], data["trainID"][i], data["fromLocation"][i], data["toLocation"][i], date[0], date[1][0], trainSeats["seatCount"][0], data["price"][i]])
 
     return trips
 
@@ -35,5 +39,6 @@ def viewTripsFiltered(conn, cursor, fromLoc, toLoc, startingFrom, endingAt, requ
 
 conn = connect("Zayat")
 
-print(viewTrains(conn, conn.cursor()))
+# print(viewTrains(conn, conn.cursor()))
+
 # viewTrips(conn, conn.cursor())
