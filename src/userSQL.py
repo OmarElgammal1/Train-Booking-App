@@ -70,5 +70,24 @@ def sign_up(email, password, *args):
             'select customerID from customer where Email = ?', (email,)))
         return customerID[0][0][0]
 
-print(sign_up('mohamedamgad233@gmail.com','b10159h3','Mohamed Amgad','01206212820'))
+
+def getInfo(email, admin):
+    if admin:
+        nameAndPassQuery = '''
+            select [admin].adminID, [USER].email, [USER].password from [USER]
+            join [admin] on [USER].Email like [admin].Email
+            where [USER].email = ?
+        '''
+        result = pnda.DataFrame(cursor.execute(nameAndPassQuery, (email,)))
+        return result[0][0]
+    else:
+        nameAndPassQuery = '''
+            select [customer].customerID, [customer].name, [customer].phoneNum, [USER].email, [USER].password from [USER]
+            join [customer] on [USER].Email like [customer].Email
+            where [USER].email = ?
+        '''
+        result = pnda.DataFrame(cursor.execute(nameAndPassQuery, (email,)))
+        return result[0][0]
+
+
 conn.close()
