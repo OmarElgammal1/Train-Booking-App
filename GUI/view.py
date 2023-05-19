@@ -56,11 +56,13 @@ class ScrollableFrame(customtkinter.CTkScrollableFrame):
 
     def addItem(self, item):
         tripLabel = customtkinter.CTkLabel(self, text=item[0], compound="left", padx=10)
-        fromLabel = customtkinter.CTkLabel(self, text=item[1], compound="left", padx=10)
-        toLabel = customtkinter.CTkLabel(self, text=item[2], compound="left", padx=10)
-        dateLabel = customtkinter.CTkLabel(self, text=item[3], compound="left", padx=10)
-        seatsLabel = customtkinter.CTkLabel(self, text=item[4], compound="left", padx=10)
-        priceLabel = customtkinter.CTkLabel(self, text=item[5], compound="left", padx=10)
+        trainLabel = customtkinter.CTkLabel(self, text=item[1], compound="left", padx=10)
+        fromLabel = customtkinter.CTkLabel(self, text=item[2], compound="left", padx=10)
+        toLabel = customtkinter.CTkLabel(self, text=item[3], compound="left", padx=10)
+        dateLabel = customtkinter.CTkLabel(self, text=item[4], compound="left", padx=10)
+        timeLabel = customtkinter.CTkLabel(self, text=item[5], compound="left", padx=10)
+        seatsLabel = customtkinter.CTkLabel(self, text=item[6], compound="left", padx=10)
+        priceLabel = customtkinter.CTkLabel(self, text=item[7], compound="left", padx=10)
         button = customtkinter.CTkButton(self, text="View", width=80, height=30)
 
         if self.email=="":
@@ -73,12 +75,14 @@ class ScrollableFrame(customtkinter.CTkScrollableFrame):
             button.configure(command=lambda: self.command(item))
 
         tripLabel.grid(row=len(self.labelList), column=0, pady=(0,10))
-        fromLabel.grid(row=len(self.labelList), column=1, pady=(0,10))
-        toLabel.grid(row=len(self.labelList), column=2, pady=(0,10))
-        dateLabel.grid(row=len(self.labelList), column=3, pady=(0,10))
-        seatsLabel.grid(row=len(self.labelList), column=4, pady=(0,10))
-        priceLabel.grid(row=len(self.labelList), column=5, pady=(0,10))
-        button.grid(row=len(self.buttonList), column=6, pady=(0,10), padx=5)
+        trainLabel.grid(row=len(self.labelList), column=1, pady=(0,10))
+        fromLabel.grid(row=len(self.labelList), column=2, pady=(0,10))
+        toLabel.grid(row=len(self.labelList), column=3, pady=(0,10))
+        dateLabel.grid(row=len(self.labelList), column=4, pady=(0,10))
+        timeLabel.grid(row=len(self.labelList), column=5, pady=(0,10))
+        seatsLabel.grid(row=len(self.labelList), column=6, pady=(0,10))
+        priceLabel.grid(row=len(self.labelList), column=7, pady=(0,10))
+        button.grid(row=len(self.buttonList), column=8, pady=(0,10), padx=5)
 
         self.labelList.append(item)
         self.buttonList.append(button)
@@ -182,19 +186,19 @@ class ViewWindow(customtkinter.CTk):
 
     def loadData(self):
         # self.tripFrame.addItem(["Trip", "From", "To", "Date", "Time", "Seats", "Price"])
-        self.tripFrame.addItem(["1", "Cairo", "Alexandria", "05/25", "230", "6$"])
-        self.tripFrame.addItem(["2", "Cairo", "Aswan", "05/29", "240", "6$"])
-        self.tripFrame.addItem(["3", "Alexandria", "Aswan", "05/18", "220", "6$"])
-        self.tripFrame.addItem(["4", "Alexandria", "Sharm El Sheikh", "12/31", "110", "6$"])
-        self.tripFrame.addItem(["5", "Aswan", "Alexandria", "01/13", "130", "6$"])
-        self.tripFrame.addItem(["6", "Cairo", "Sharm El Sheikh", "06/21", "220", "6$"])
-        self.tripFrame.addItem(["7", "Alexandria", "Cairo", "05/18", "200", "6$"])
-        self.tripFrame.addItem(["8", "Aswan", "Cairo", "02/29", "250", "6$"])
+        from viewSQL import viewTrips
+        from connect import connect, close
+        conn = connect("Zayat")
+
+        data = viewTrips(conn, conn.cursor())
+
+        for i in data:
+            self.tripFrame.addItem(i)
 
     def updateInfo(self):
         from register import RegisterWindow
+        reg = RegisterWindow(True, self.isAdmin, "yousefalzayat02@yahoo.com")
         self.destroy()
-        reg = RegisterWindow(True, self.isAdmin)
         reg.mainloop()
 
     def updateTrain(self):
@@ -217,5 +221,5 @@ class ViewWindow(customtkinter.CTk):
         window.grab_set()
 
 if __name__ == "__main__":
-    test = ViewWindow("a", False)
+    test = ViewWindow("yousefalzayat02@yahoo.com", True)
     test.mainloop()
