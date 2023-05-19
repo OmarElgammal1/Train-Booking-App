@@ -1,11 +1,9 @@
 # Import necessary libraries
-import sys
 import pyodbc as odbc
-import pandas as pnda
 
 # Define the needed attributes for the connection string
 # Run ```SELECT @@SERVERNAME``` on MS SQL server to find YOUR_SERVER_NAME
-SERVER_NAME = 'YOUR_SERVER_NAME'
+SERVER_NAME = 'DESKTOP-UF4LPT6'
 DATABASE_NAME = 'TrainBooking'
 
 connection_string = f"""
@@ -14,11 +12,11 @@ connection_string = f"""
     DATABASE={DATABASE_NAME};
     Trust_Connection=yes;
 """
+# Connect to the database
+conn = odbc.connect(connection_string)
+cursor = conn.cursor()
 
 def deleteTrip(tripID):
-    # Connect to the database
-    conn = odbc.connect(connection_string)
-    cursor = conn.cursor()
 
     # Check if the customer is already booked on the trip
     cursor.execute(f"""
@@ -37,18 +35,13 @@ def deleteTrip(tripID):
         DELETE FROM TRIPS
         WHERE tripID = {tripID};
     """)
-
-    
+    cursor.commit()
     # Close the connection
     if not conn.closed:
         conn.close()
-    return True;
+    return True
 
 def deleteTrain(trainID):
-    conn = odbc.connect(connection_string)
-    cursor = conn.cursor()
-
-
     # Check if Train has no pending trips
     cursor.execute(f"""
         SELECT tripID From TRIP
@@ -64,4 +57,13 @@ def deleteTrain(trainID):
         DELETE FROM TRAIN
         WHERE trainID = {trainID};
     """)
-    return True;
+    cursor.commit()
+    return True
+
+def deleteUser(email):
+    cursor.execute(f'''
+        DELETE FROM [USER]
+        WHERE [USER].email = '{email}'
+    ''')
+    cursor.commit()
+    return True
