@@ -4,18 +4,26 @@ import customtkinter
 
 
 class RegisterWindow(customtkinter.CTk):
-    def __init__(self, edit=False, admin=False):
-        self.edit = edit
-        self.admin = admin
-
+    def __init__(self, edit=False, admin=False, email=""):
         super().__init__()
+
+        self.admin = admin
+        self.email = email
+        self.edit = edit
+
+        title = ""
+        if edit:
+            title = "Edit"
+        else:
+            title = "Register"
+
         self.geometry("500x300")
         self.resizable(0, 0)
 
         self.formFrame = customtkinter.CTkFrame(master=self, width=480, height=280)
         self.formFrame.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
-        self.label = customtkinter.CTkLabel(master=self.formFrame, text="Register", font=customtkinter.CTkFont(size=30, weight="bold"))
+        self.label = customtkinter.CTkLabel(master=self.formFrame, text=title, font=customtkinter.CTkFont(size=30, weight="bold"))
         self.label.place(relx=0.5, rely=0.125, anchor=tkinter.CENTER)
 
         self.nameEntry = customtkinter.CTkEntry(master=self.formFrame, placeholder_text="Name", height=40, width=465)
@@ -36,7 +44,7 @@ class RegisterWindow(customtkinter.CTk):
         self.passwordReEntry = customtkinter.CTkEntry(master=self.formFrame, show="*", placeholder_text="Re-Enter Password", height=40, width=225)
         self.passwordReEntry.place(relx=0.75, rely=0.675, anchor=tkinter.CENTER)
 
-        self.registerButton = customtkinter.CTkButton(master=self.formFrame, text="Register", command=self.registerFunction, height=40, width=225)
+        self.registerButton = customtkinter.CTkButton(master=self.formFrame, text=title, command=self.registerFunction, height=40, width=225)
         self.registerButton.place(relx=0.75, rely=0.9, anchor=tkinter.CENTER)
 
         self.backButton = customtkinter.CTkButton(master=self.formFrame, text="Go Back", command=self.backFunction, height=40, width=80)
@@ -78,9 +86,22 @@ class RegisterWindow(customtkinter.CTk):
             print("Update...")
 
         else:
-            print("Register...")
+            from connect import connect, close
+            from userSQL import sign_up
+            conn = connect("Zayat")
+            done = False
+            if self.admin:
+                if sign_up(conn, conn.cursor(), self.eMailEntry.get(), self.passwordEntry.get(), self.admin):
+                    done = True
+            else:
+                if sign_up(conn, conn.cursor(), self.eMailEntry.get(), self.passwordEntry.get()):
+                    done = True
 
-        self.backFunction()
+            if done:
+                from view import ViewWindow
+                view = ViewWindow(self.eMailEntry.get(), self.adminCheck.get())
+                self.destroy()
+                view.mainloop()
 
     def backFunction(self):
         from app import mainApp
