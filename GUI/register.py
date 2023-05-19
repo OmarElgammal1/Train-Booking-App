@@ -5,6 +5,16 @@ import customtkinter
 
 class RegisterWindow(customtkinter.CTk):
     def __init__(self, edit=False, admin=False, email=""):
+        self.edit = edit
+        self.admin = admin
+        self.email = email
+        
+        title = ""
+        if edit:
+            title = "Edit"
+        else:
+            title = "Register"
+
         super().__init__()
 
         self.admin = admin
@@ -70,8 +80,6 @@ class RegisterWindow(customtkinter.CTk):
             self.nameEntry.configure(state="disabled")
             self.phoneEntry.configure(state="disabled")
 
-
-
     def adminCheckToggled(self):
         if self.adminCheck.get():
             self.phoneEntry.configure(state="disabled")
@@ -102,6 +110,10 @@ class RegisterWindow(customtkinter.CTk):
                 view = ViewWindow(self.eMailEntry.get(), self.adminCheck.get())
                 self.destroy()
                 view.mainloop()
+
+
+    # def moveToView(self):
+    #     from 
 
     def backFunction(self):
         from app import mainApp

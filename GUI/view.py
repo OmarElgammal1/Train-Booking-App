@@ -192,10 +192,9 @@ class ViewWindow(customtkinter.CTk):
         self.tripFrame.addItem(["8", "Aswan", "Cairo", "02/29", "250", "6$"])
 
     def updateInfo(self):
-        # print("Updating Info")
         from register import RegisterWindow
         self.destroy()
-        reg = RegisterWindow()
+        reg = RegisterWindow(True, self.isAdmin)
         reg.mainloop()
 
     def updateTrain(self):
@@ -218,5 +217,5 @@ class ViewWindow(customtkinter.CTk):
         window.grab_set()
 
 if __name__ == "__main__":
-    test = ViewWindow("a", True)
+    test = ViewWindow("a", False)
     test.mainloop()

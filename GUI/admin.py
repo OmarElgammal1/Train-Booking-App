@@ -2,33 +2,46 @@ import tkinter
 import customtkinter
 
 class AdminWindow(customtkinter.CTk):
-    def __init__(self):
+    def __init__(self, data):
+
+        self.data = data
         super().__init__()
-        self.geometry("400x200")
+
         self.resizable(0, 0)
+        self.geometry("400x190")
+        self.title("Trip Viewer")
 
-        self.labelFrame = customtkinter.CTkFrame(master=self, width=380, height=65, border_color="blue")
-        self.labelFrame.place(relx=0.5, rely=0.215, anchor=tkinter.CENTER)
+        self.tripID = customtkinter.CTkLabel(self, text="Trip ID: " + data[0], height=20, font=customtkinter.CTkFont(size=16, weight="bold"))
+        self.tripID.place(x=10, y=10, anchor=tkinter.NW)
 
-        self.label = customtkinter.CTkLabel(master=self.labelFrame, text="Train Booking Application", font=customtkinter.CTkFont(size=30, weight="bold"))
-        self.label.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
+        self.trainID = customtkinter.CTkLabel(self, text=("Train ID: " + data[1]), height=20, font=customtkinter.CTkFont(size=16, weight="bold"))
+        self.trainID.place(x=390, y=10, anchor=tkinter.NE)
 
-        self.buttonFrame = customtkinter.CTkFrame(master=self, width=380, height=105)
-        self.buttonFrame.place(relx=0.5, rely=0.685, anchor=tkinter.CENTER)
+        self.fromAddress = customtkinter.CTkLabel(self, text=("From: " + data[2]), height=20, font=customtkinter.CTkFont(size=16, weight="bold"))
+        self.fromAddress.place(x=10, y=40, anchor=tkinter.NW)
 
-        self.viewButton = customtkinter.CTkButton(master=self.buttonFrame, text="View", command=button_function, height=40)
-        self.viewButton.place(relx=0.5, rely=0.74, anchor=tkinter.CENTER)
+        self.toAddress = customtkinter.CTkLabel(self, text=("To: " + data[3]), height=20, font=customtkinter.CTkFont(size=16, weight="bold"))
+        self.toAddress.place(x=390, y=40, anchor=tkinter.NE)
 
-        self.signInButton = customtkinter.CTkButton(master=self.buttonFrame, text="Sign In", command=button_function, height=40)
-        self.signInButton.place(relx=0.8, rely=0.26, anchor=tkinter.CENTER)
+        self.price = customtkinter.CTkLabel(self, text=("Price/Ticket: " + data[7]), height=20, font=customtkinter.CTkFont(size=16, weight="bold"))
+        self.price.place(x=10, y=70, anchor=tkinter.NW)
 
-        self.registerButton = customtkinter.CTkButton(master=self.buttonFrame, text="Register", command=button_function, height=40)
-        self.registerButton.place(relx=0.2, rely=0.26, anchor=tkinter.CENTER)
+        self.availableSeats = customtkinter.CTkLabel(self, text=("Available Seats: " + data[6]), height=20, font=customtkinter.CTkFont(size=16, weight="bold"))
+        self.availableSeats.place(x=390, y=70, anchor=tkinter.NE)
 
-    def button_function():
-        print("Button Pressed admin window")
+        self.departure = customtkinter.CTkLabel(self, text=("Departure: " + data[4] + " at " + data[5]), height=20, font=customtkinter.CTkFont(size=16, weight="bold"))
+        self.departure.place(x=200, y=110, anchor=tkinter.CENTER)
+
+        self.ticketNum = customtkinter.CTkEntry(self, placeholder_text="Number of Tickets", height=40, width=160)
+        self.ticketNum.place(x=120, y=140, anchor=tkinter.NW)
+
+        self.exitButton = customtkinter.CTkButton(self, text="Go Back", command=self.destroy, height=40, width=100)
+        self.exitButton.place(x=10, y=140, anchor=tkinter.NW)
+
+        self.continueButton = customtkinter.CTkButton(self, text="Book Tickets", height=40, width=100)
+        self.continueButton.place(x=390, y=140, anchor=tkinter.NE)
 
 
 if __name__ == "__main__":
-    test = AdminWindow()
+    test = AdminWindow(["1", "Spanish 1", "Sharm El Sheikh", "Alexandria", "2023/05/19", "18:00", "230", "100$"])
     test.mainloop()

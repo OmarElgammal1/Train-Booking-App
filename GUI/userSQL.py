@@ -33,8 +33,8 @@ def sign_up(conn, cursor, email, password, *args):
         cursor.execute(insertEmailAndPassQuery, (email, password, email))
         conn.commit()
         adminID = pnda.DataFrame(cursor.execute(
-            'select Admin_Id from admin where Email = ?', (email,)))
-        return adminID[0][0][0]
+            'select email from admin where Email = ?', (email,)))
+        return email[0][0][0]
     else:
         insertCustomerDataQuery = '''
                 insert into [USER] (email, password) values (?, ?);
@@ -48,21 +48,3 @@ def sign_up(conn, cursor, email, password, *args):
         customerID = pnda.DataFrame(cursor.execute(
             'select customerID from customer where Email = ?', (email,)))
         return customerID[0][0][0]
-
-def getInfo(email, admin):
-    if admin:
-        nameAndPassQuery = '''
-            select [admin].adminID, [USER].email, [USER].password from [USER]
-            join [admin] on [USER].Email like [admin].Email
-            where [USER].email = ?
-        '''
-        result = pnda.DataFrame(cursor.execute(nameAndPassQuery, (email,)))
-        return result[0][0]
-    else:
-        nameAndPassQuery = '''
-            select [customer].customerID, [customer].name, [customer].phoneNum, [USER].email, [USER].password from [USER]
-            join [customer] on [USER].Email like [customer].Email
-            where [USER].email = ?
-        '''
-        result = pnda.DataFrame(cursor.execute(nameAndPassQuery, (email,)))
-        return result[0][0]
