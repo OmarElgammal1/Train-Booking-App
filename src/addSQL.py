@@ -60,11 +60,24 @@ def addTrip(tripData):
         print("Train does NOT exist! Cannot add trip!")
         return ""
     # Test the insert query to add a new trip with the passed data
+    # Check for duplicate trips before adding a new one
     try:
         cursor.execute(f"""
-            INSERT INTO TRIP
-            VALUES ({tripData[0]}, '{tripData[1]}', '{tripData[2]}', '{tripData[3]}', {tripData[4]});
+            INSERT INTO TRIP (trainID, fromLocation, toLocation, depTime, price)
+            SELECT {tripData[0]}, '{tripData[1]}', '{tripData[2]}', '{tripData[3]}', {tripData[4]}
+            WHERE NOT EXISTS (
+                SELECT * FROM TRIP
+                WHERE trainID = {tripData[0]}
+                AND depTime = '{tripData[3]}'
+            );
         """)
+        # Check the number of affected rows
+        if cursor.rowcount > 0:
+            print(cursor.rowcount, "row(s) affected!")
+        else:
+            print("There is already a trip on this train at the same time!")
+            print("Cannot add the same trip details more than one time!")
+            return ""
     except Exception as e:
         cursor.rollback()
         print(e)
@@ -90,8 +103,15 @@ def addTrip(tripData):
         tripID = listOfIDs[-1][-1][0]
     else:
         tripID = listOfIDs[0][0][0]
-    # Insert a new record in the SEAT table with customerID set to NULL
-    cursor.execute(f""" INSERT INTO SEAT VALUES ({tripID}, NULL); """)
+    # Get the number of seats of the selected train
+    trainSeatCount = cursor.execute(f"""
+        SELECT seatCount FROM TRAIN
+        WHERE trainID = {tripData[0]}; """).fetchone()[0]
+    # Insert new records in the SEAT table with customerID set to NULL
+    # According to the number of seats in the train associated with the added trip
+    while trainSeatCount >= 1:
+        cursor.execute(f" INSERT INTO SEAT VALUES ({tripID}, NULL); ")
+        trainSeatCount -= 1
     cursor.commit()
     # Return the trip id that was just added
     print("Added trip ID:", tripID)
