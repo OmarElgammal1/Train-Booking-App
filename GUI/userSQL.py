@@ -66,7 +66,3 @@ def getInfo(conn, cursor, email, admin):
         '''
         result = pnda.DataFrame(cursor.execute(nameAndPassQuery, (email,)))
         return result[0][0]
-
-
-conn = connect("Zayat")
-print(getInfo(conn, conn.cursor(), "mohamad@gmail.com", False))
