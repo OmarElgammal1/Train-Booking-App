@@ -1,54 +1,11 @@
 # Import necessary libraries
-import pyodbc as odbc
-import pandas as pnda
-
-# Define the needed attributes for the connection string
-# Run ```SELECT @@SERVERNAME``` on MS SQL server to find YOUR_SERVER_NAME
-SERVER_NAME = 'YOUR_SERVER_NAME'
-DATABASE_NAME = 'TrainBooking'
-
-connection_string = f"""
-    DRIVER={"SQL SERVER"};
-    SERVER={SERVER_NAME};
-    DATABASE={DATABASE_NAME};
-    Trust_Connection=yes;
-"""
-
-# Connect to MS SQL Server Database
-conn = odbc.connect(connection_string)
-cursor = conn.cursor()
+# import pandas as pnda
 
 # Add a new train to the database (done by admins only)
 # Train data must be passed in this specifc order [seatCount, trainType]
-def addTrain(trainData):
-    # Test the insert query to add new train with the passed data
-    try:
-        cursor.execute(f""" INSERT INTO TRAIN VALUES ({trainData[0]}, '{trainData[1]}'); """)
-    except Exception as e:
-        cursor.rollback()
-        print(e)
-        print("Transaction Rollback! Insertion Failed!")
-        return ""
-    else:
-        print("Train Added Successfully!")
-        cursor.commit()
-    # Select query to get the train id
-    selectQuery = f"""
-        SELECT trainID FROM TRAIN
-        WHERE seatCount = {trainData[0]}
-        AND trainType = '{trainData[1]}';
-    """
-    # Parse the DataFrame into a list
-    listOfIDs = pnda.DataFrame(cursor.execute(selectQuery)).values.tolist()
-    # Check for the returned number of ids, if they're more than one id
-    # Return the last trainID that was added, otherwise return the first one
-    if(len(listOfIDs) > 1):
-        trainID = listOfIDs[-1][-1][0]
-    else:
-        trainID = listOfIDs[0][0][0]
-    # Return the train ID that was just added
-    print("Added Train ID:", trainID)
-    return trainID
+def addTrain(conn, cursor, trainData):
+    cursor.execute(f""" INSERT INTO TRAIN VALUES ({trainData[0]}, '{trainData[1]}'); """)
+    return True
 
 # Add a new trip to the database (done by admins only)
 # Trip data must be passed in this specifc order [trainID, fromLocation, toLocation, depTime, price]
@@ -124,9 +81,3 @@ def addTrip(tripData):
 # Testing the addition of a new trip
 # test = [1, 'Tanta', 'Cairo', '2024-07-25 07:30:00', 50.0]
 # addTrip(test)
-
-# Close the cursor and the connection
-if not conn.closed:
-    cursor.close()
-    conn.close()
-    print("Connection Closed!")
