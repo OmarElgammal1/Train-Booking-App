@@ -95,11 +95,11 @@ class RegisterWindow(customtkinter.CTk):
             from userSQL import sign_up
             conn = connect("Zayat")
             done = False
-            if self.admin:
-                if sign_up(conn, conn.cursor(), self.eMailEntry.get(), self.passwordEntry.get(), self.admin):
+            if self.adminCheck.get():
+                if sign_up(conn, conn.cursor(), self.eMailEntry.get(), self.passwordEntry.get()):
                     done = True
             else:
-                if sign_up(conn, conn.cursor(), self.eMailEntry.get(), self.passwordEntry.get()):
+                if sign_up(conn, conn.cursor(), self.eMailEntry.get(), self.passwordEntry.get(), self.nameEntry.get(), self.phoneEntry.get()):
                     done = True
 
             if done:
@@ -119,5 +119,5 @@ class RegisterWindow(customtkinter.CTk):
         app.mainloop()
 
 if __name__ == "__main__":
-    test = RegisterWindow(False, False, "mohamad@gmail.com")
+    test = RegisterWindow(False, False, "")
     test.mainloop()
