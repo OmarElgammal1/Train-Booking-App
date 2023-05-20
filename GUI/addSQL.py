@@ -7,7 +7,7 @@ def addTrain(cursor, trainData):
 
 # Add a new trip to the database (done by admins only)
 # Trip data must be passed in this specifc order [trainID, fromLocation, toLocation, depTime, price]
-def addTrip(tripData):
+def addTrip(cursor, tripData):
     cursor.execute(f"""
         INSERT INTO TRIP (trainID, fromLocation, toLocation, depTime, price)
         SELECT {tripData[0]}, '{tripData[1]}', '{tripData[2]}', '{tripData[3]}', {tripData[4]}
@@ -17,8 +17,11 @@ def addTrip(tripData):
             AND depTime = '{tripData[3]}'
         );
     """)
-        
-    cursor.commit()
+    # Check the number of affected rows
+    if cursor.rowcount > 0:
+        cursor.commit()
+    else:
+        return False
     
     # Select query to get the trip ID
     selectQuery = f"""
@@ -30,6 +33,7 @@ def addTrip(tripData):
         AND price = {tripData[4]};
     """
     # Parse the DataFrame into a list
+    import pandas as pnda
     listOfIDs = pnda.DataFrame(cursor.execute(selectQuery)).values.tolist()
     # Check for the returned number of ids, if they're more than one id
     # Return the last tripID that was added, otherwise return the first one
@@ -47,6 +51,7 @@ def addTrip(tripData):
         cursor.execute(f" INSERT INTO SEAT VALUES ({tripID}, NULL); ")
         trainSeatCount -= 1
     cursor.commit()
+    return True
 
 # # Testing the addition of a new train
 # # test = [500, 'Express']

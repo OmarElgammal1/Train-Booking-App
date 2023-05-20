@@ -11,7 +11,6 @@ class mainApp(customtkinter.CTk):
         self.geometry("500x300")
         self.resizable(0, 0)
 
-
         buttonFrame = customtkinter.CTkFrame(master=self, width=480, height=280)
         buttonFrame.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
@@ -36,11 +35,8 @@ class mainApp(customtkinter.CTk):
         registerLabel = customtkinter.CTkLabel(master=buttonFrame, text="Register a New Account", font=customtkinter.CTkFont(size=20, weight="bold"))
         registerLabel.place(relx=0.375, rely=0.675, anchor=tkinter.CENTER)
 
-        exitButton = customtkinter.CTkButton(master=buttonFrame, text="Exit", command=self.exit, height=40, width=80)
+        exitButton = customtkinter.CTkButton(master=buttonFrame, text="Exit", command=self.destroy, height=40, width=80)
         exitButton.place(relx=0.1, rely=0.9, anchor=tkinter.CENTER)
-
-    def exit(self):
-        self.destroy()
     
     def view(self):
         self.destroy()
@@ -56,7 +52,6 @@ class mainApp(customtkinter.CTk):
         self.destroy()
         reg = RegisterWindow()
         reg.mainloop()
-
 
 if __name__ == "__main__":
     app = mainApp()

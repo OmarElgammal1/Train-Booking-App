@@ -1,4 +1,3 @@
-from connect import connect, close
 import pandas as pnda
 pnda.set_option('display.max_columns', None)
 
@@ -34,11 +33,6 @@ def viewTripsFiltered(conn, cursor, fromLoc, toLoc, startingFrom, endingAt, requ
     query = f"""select * from trip
     WHERE
     fromLocation like {fromLoc} AND
-    toLocation like {toLoc}
+    toLocation like {toLoc} AND
+
     """
-
-conn = connect("Zayat")
-
-# print(viewTrains(conn, conn.cursor()))
-
-# viewTrips(conn, conn.cursor())

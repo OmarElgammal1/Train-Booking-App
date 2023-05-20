@@ -55,6 +55,7 @@ class RegisterWindow(customtkinter.CTk):
 
             self.eMailEntry.configure(width=225)    
             self.eMailEntry.place(relx=0.25)
+            self.eMailEntry.configure(state="disabled")
             self.adminCheck.destroy()
             self.phoneEntry.configure(width=225)
             self.phoneEntry.place(relx=0.75, rely=0.5, anchor=tkinter.CENTER)
@@ -74,6 +75,9 @@ class RegisterWindow(customtkinter.CTk):
             self.nameEntry.insert(0, data[1])
             self.phoneEntry.insert(0, data[2])
         else:
+            self.eMailEntry.insert(0, data[0])
+            self.passwordEntry.insert(0, data[1])
+            self.passwordReEntry.insert(0, data[1])
             self.nameEntry.configure(state="disabled")
             self.phoneEntry.configure(state="disabled")
 
@@ -86,15 +90,23 @@ class RegisterWindow(customtkinter.CTk):
             self.nameEntry.configure(state="normal", placeholder_text="Name")
 
     def registerFunction(self):
+        from connect import connect, close
+        done = False
 
         if self.edit == True:
-            print("Update...")
+            from updateSQL import updateUser
+
+            if self.admin:
+                updateUser(connect("Zayat").cursor(), self.admin, self.email, self.passwordEntry.get())
+            else:
+                updateUser(connect("Zayat").cursor(), self.admin, self.email, self.passwordEntry.get(), self.nameEntry.get(), self.phoneEntry.get())
+
+            tkinter.messagebox.showinfo("Train Editted", "Success")
+            done = True
 
         else:
-            from connect import connect, close
             from userSQL import sign_up
             conn = connect("Zayat")
-            done = False
             if self.adminCheck.get():
                 if sign_up(conn, conn.cursor(), self.eMailEntry.get(), self.passwordEntry.get()):
                     done = True
@@ -102,21 +114,26 @@ class RegisterWindow(customtkinter.CTk):
                 if sign_up(conn, conn.cursor(), self.eMailEntry.get(), self.passwordEntry.get(), self.nameEntry.get(), self.phoneEntry.get()):
                     done = True
 
-            if done:
-                from view import ViewWindow
-                view = ViewWindow(self.eMailEntry.get(), self.adminCheck.get())
-                self.destroy()
-                view.mainloop()
-
-
-    # def moveToView(self):
-    #     from 
+        if done:
+            from view import ViewWindow
+            view = ViewWindow(self.eMailEntry.get(), self.admin)
+            self.destroy()
+            view.mainloop()
 
     def backFunction(self):
-        from app import mainApp
-        self.destroy()
-        app = mainApp()
-        app.mainloop()
+
+        if self.edit == True:
+            from view import ViewWindow
+            view = ViewWindow(self.eMailEntry.get(), self.admin)
+            self.destroy()
+            view.mainloop()
+
+
+        else:
+            from app import mainApp
+            self.destroy()
+            app = mainApp()
+            app.mainloop()
 
 if __name__ == "__main__":
     test = RegisterWindow(False, False, "")

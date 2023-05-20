@@ -23,6 +23,18 @@ def updateTrip(cursor, tripData):
         depTime = '{tripData[4]}',
         price = {tripData[5]}
         WHERE tripID = {tripData[0]};
+        delete SEAT
+        where tripID = {tripData[0]};
+        Declare @seatCount int
+        declare @i int = 0
+        select @seatCount = seatCount from train where trainID  = {tripData[1]};
+        while @i < @seatCount
+        begin
+        set @i = @i + 1
+        insert into SEAT (Seat.tripID)
+        select TRIP.tripID from TRIP
+        where TRIP.tripID = {tripData[0]};
+        end
     """)
     cursor.commit()
 
