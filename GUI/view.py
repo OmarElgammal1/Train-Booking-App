@@ -1,7 +1,6 @@
 import tkinter
 import customtkinter
 
-
 class ViewTripWindow(customtkinter.CTkToplevel):
     def __init__(self, parent, data):
         super().__init__(parent)
@@ -40,6 +39,82 @@ class ViewTripWindow(customtkinter.CTkToplevel):
         self.continueButton = customtkinter.CTkButton(self, text="Book Tickets", height=40, width=100)
         self.continueButton.place(x=390, y=140, anchor=tkinter.NE)
 
+class TrainWindow(customtkinter.CTkToplevel):
+    def __init__(self, parent, isEditing):
+        super().__init__(parent)
+
+        self.isEditing = isEditing
+        self.data = []
+
+        if self.isEditing:
+            title = "Edit"
+        else:
+            title = "Add"
+
+        self.resizable(0, 0)
+        self.geometry("300x150")
+        self.title("Train Viewer")
+
+        self.string = tkinter.StringVar(self)
+        self.string.set("Train ID")
+        self.trainID = customtkinter.CTkOptionMenu(self, height=20, width=100, variable=self.string, font=customtkinter.CTkFont(size=16, weight="bold"), command=self.loadData)
+        self.trainID.place(x=150, y=15, anchor=tkinter.N)
+
+        self.trainNameLabel = customtkinter.CTkLabel(self, text="Train Name", height=16, font=customtkinter.CTkFont(size=16, weight="bold"))
+        self.trainNameLabel.place(x=12, y=45, anchor=tkinter.NW)
+
+        self.trainName = customtkinter.CTkEntry(self, height=20, width=135, font=customtkinter.CTkFont(size=16, weight="bold"))
+        self.trainName.place(x=10, y=65, anchor=tkinter.NW)
+
+        self.trainSeatsLabel = customtkinter.CTkLabel(self, text="Train Seats", height=16, font=customtkinter.CTkFont(size=16, weight="bold"))
+        self.trainSeatsLabel.place(x=157, y=45, anchor=tkinter.NW)
+
+        self.trainSeats = customtkinter.CTkEntry(self, height=20, width=135, font=customtkinter.CTkFont(size=16, weight="bold"))
+        self.trainSeats.place(x=155, y=65, anchor=tkinter.NW)
+
+        self.exitButton = customtkinter.CTkButton(self, text="Go Back", command=self.destroy, height=40, width=100)
+        self.exitButton.place(x=10, y=140, anchor=tkinter.SW)
+
+        self.continueButton = customtkinter.CTkButton(self, text=title, height=40, width=100, command=self.addTrain)
+        self.continueButton.place(x=290, y=140, anchor=tkinter.SE)
+
+        if self.isEditing:
+            self.loadCheckBox()
+        else:
+            self.trainID.configure(state="disabled")
+
+    def loadData(self, ID):
+        for i in self.data:
+            if ID == str(i[0]):
+                self.trainSeats.delete(0, 255)
+                self.trainSeats.insert(0, str(i[2]))
+
+                self.trainName.delete(0, 255)
+                self.trainName.insert(0, str(i[1]))
+
+    def loadCheckBox(self):
+        from viewSQL import viewTrains
+        from connect import connect
+        conn = connect("Zayat")
+        self.data = viewTrains(conn, conn.cursor())
+        trainIDs = []
+        for i in self.data:
+            trainIDs.append(str(i[0]))
+        self.trainID.configure(values=trainIDs)  
+
+    def addTrain(self):
+        if self.isEditing:
+            for i in self.data:
+                if self.trainID.get() == str(i[0]):
+                    from updateSQL import updateTrain
+                    from connect import connect
+                    updateTrain(connect("Zayat").cursor(), [int(self.trainSeats.get()), self.trainName.get(), int(self.trainID.get())])
+
+        else:
+            from connect import connect
+            from addSQL import addTrain
+            conn = connect("Zayat")
+            addTrain(conn.cursor(), [int(self.trainSeats.get()), self.trainName.get()]);
 
 class ScrollableFrame(customtkinter.CTkScrollableFrame):
 
@@ -202,10 +277,12 @@ class ViewWindow(customtkinter.CTk):
         reg.mainloop()
 
     def updateTrain(self):
-        print("Updating train")
-    
+        window = TrainWindow(self, True)
+        window.grab_set()
+
     def addTrain(self):
-        print("Adding Train")
+        window = TrainWindow(self, False)
+        window.grab_set()
     
     def addTrip(self):
         print("Adding Trip")
