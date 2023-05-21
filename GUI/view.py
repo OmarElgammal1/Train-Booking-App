@@ -387,6 +387,7 @@ class ViewWindow(customtkinter.CTk):
         super().__init__()
         self.geometry("800x510")
         self.resizable(0, 0)
+        self.title("RailScape")
 
         self.searchFrame = customtkinter.CTkFrame(master=self, width=645, height=100)
         self.searchFrame.place(x=145, y=10, anchor=tkinter.NW)

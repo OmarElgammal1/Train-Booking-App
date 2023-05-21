@@ -6,6 +6,7 @@ class LogInWindow(customtkinter.CTk):
         super().__init__()
         self.geometry("500x300")
         self.resizable(0, 0)
+        self.title("Log In")
 
         self.formFrame = customtkinter.CTkFrame(master=self, width=480, height=280)
         self.formFrame.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
@@ -57,8 +58,8 @@ class LogInWindow(customtkinter.CTk):
     def backFunction(self):
         from app import mainApp
         app = mainApp()
-        app.mainloop()
         self.destroy()
+        app.mainloop()
 
 if __name__ == "__main__":
     test = LogInWindow()

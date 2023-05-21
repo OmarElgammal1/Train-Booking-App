@@ -65,13 +65,16 @@ class TripWindow(customtkinter.CTk):
         super().__init__()
         self.geometry("600x300")
         self.resizable(0, 0)
-
         self.isSearching = True
-        self.data = data
-        self.email = email
+        self.winTitle = "Search for Trips"
 
         if data == []:
             self.isSearching = False
+            self.winTitle = "View Trips"
+
+        self.title(self.winTitle)
+        self.data = data
+        self.email = email
 
         self.tripFrame = ScrollableFrame(master=self, email=self.email, isSearching=self.isSearching, command=self.continueButton, width=560, height=218)
         self.tripFrame.place(x=10, y=10, anchor=tkinter.NW)

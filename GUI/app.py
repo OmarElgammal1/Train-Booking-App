@@ -10,6 +10,7 @@ class mainApp(customtkinter.CTk):
         super().__init__()
         self.geometry("500x300")
         self.resizable(0, 0)
+        self.title("Main Menu")
 
         buttonFrame = customtkinter.CTkFrame(master=self, width=480, height=280)
         buttonFrame.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
