@@ -34,6 +34,23 @@ def topTrainsBySeatCount(cursor):
     finalList.insert(0, ["Train ID", "Train Type", "Number of Trips"])
     return finalList
 
+# Get the top 5 customers
+def topCustomers(cursor):
+    query = '''
+        select top 5 [CUSTOMER].customerID, [CUSTOMER].[name], COUNT([SEAT].seatNum) as numOfSeat
+        from CUSTOMER join SEAT on CUSTOMER.customerID = SEAT.customerID
+        group by [CUSTOMER].customerID,[customer].name
+        order by numOfSeat desc;
+    '''
+    results = pnda.DataFrame(cursor.execute(query)).values.tolist()
+    finalList = []
+    for r in results:
+        finalList.append(list(r[0]))
+    # Return a list of 5 lists, each list contains exactly three values
+    # As follows ==> (customerID, name, numOfSeat)
+    # Inserts table header
+    finalList.insert(0, ["Customer ID", "Customer Name", "Number of Seats"])
+    return finalList
 
 # Function to generate the table data
 def topTrains():
