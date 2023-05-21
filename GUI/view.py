@@ -79,6 +79,36 @@ class AdminTripWindow(customtkinter.CTk):
         from connect import connect
         return tripEmpty(connect("Zayat").cursor(), tripID)
 
+    def adminTripReady(self):
+        import re
+        from datetime import datetime
+
+
+        if self.trainName.get() == "":
+            return False
+
+        if self.trainSeats.get() == "":
+            return False
+            
+        if self.trainID.get() == "Train ID":
+            return False
+
+        if self.fromEntry.get() == "":
+            return False
+
+        if self.toEntry.get() == "":
+            return False
+
+        if re.match("^\d+?\.\d+?$", self.priceEntry.get()) is None:
+            if not self.priceEntry.get().isdigit():
+                return False
+        
+        try:
+            datetime.strptime(self.depTimeEntry.get(), '%y/%m/%d %H:%M:%S')
+            return True
+        except:
+            return False
+
     def onStart(self):
         if self.tripData != []:
             print(self.tripData)
@@ -119,6 +149,11 @@ class AdminTripWindow(customtkinter.CTk):
         self.trainID.configure(values=trainIDs)
 
     def continueTrip(self):
+
+        if not self.adminTripReady():
+            tkinter.messagebox.showinfo("Error", "The info you have entered is incorrect\nPlease make sure all the fields are written and in the correct format.")
+            return
+
         from connect import connect
         from datetime import datetime
         if self.edit:
@@ -177,6 +212,11 @@ class ViewTripWindow(customtkinter.CTk):
         self.continueButton.place(x=390, y=140, anchor=tkinter.NE)
 
     def book(self):
+
+        if not self.ticketNum.get().isdigit() and self.ticketNum.get()[0] != '-':
+            tkinter.messagebox.showinfo("Error", "Please enter a valid amount of tickets")
+            return
+        
         from connect import connect
         from extra import getCustomerID
         from tripsSQL import bookTrip
@@ -250,17 +290,34 @@ class TrainWindow(customtkinter.CTk):
             trainIDs.append(str(i[0]))
         self.trainID.configure(values=trainIDs)  
 
+    def trainReady(self):
+        if self.trainName.get() == "":
+            return False
+
+        if not self.trainSeats.get().isdigit():
+            return False
+
+        if self.isEditing and self.trainID.get() == "Train ID":
+            return False
+
+        return True
+
     def addTrain(self):
+
+        if not self.trainReady():
+            tkinter.messagebox.showinfo("Error", "Please check the info you have provided")
+            return
+
+        from connect import connect
+        cursor = connect("Zayat").cursor()
+
         if self.isEditing:
             from updateSQL import updateTrain
-            from connect import connect
-            updateTrain(connect("Zayat").cursor(), [int(self.trainSeats.get()), self.trainName.get(), int(self.trainID.get())])
+            updateTrain(cursor, [int(self.trainSeats.get()), self.trainName.get(), int(self.trainID.get())])
             tkinter.messagebox.showinfo("Train Editted", "Success")
         else:
-            from connect import connect
             from addSQL import addTrain
-            conn = connect("Zayat")
-            addTrain(conn.cursor(), [int(self.trainSeats.get()), self.trainName.get()])
+            addTrain(cursor, [int(self.trainSeats.get()), self.trainName.get()])
             tkinter.messagebox.showinfo("Train Added", "Success")
 
         self.destroy()
@@ -356,8 +413,8 @@ class ViewWindow(customtkinter.CTk):
         self.tripFrame.place(x=790, y=500, anchor=tkinter.SE)
 
 
-        self.labelHead = customtkinter.CTkLabel(master=self, text="   Trip  Train              From                                   To" + 
-        "                            Date                   Time                    Price", width=445, height=20, anchor="w")
+        self.labelHead = customtkinter.CTkLabel(master=self, text="   Trip  Train                From                                      To" + 
+        "                            Date              Time                    Price", width=445, height=20, anchor="w")
         self.labelHead.place(x=145, y=120 ,anchor=tkinter.NW)
 
         self.labelHead2 = customtkinter.CTkLabel(master=self, text="Available\nSeats")
@@ -385,6 +442,9 @@ class ViewWindow(customtkinter.CTk):
         self.adminLabel.place(x=15, y=30, anchor=tkinter.NW)
 
         self.loadLeftFrame(email, isAdmin)
+
+        self.refreshButton = customtkinter.CTkButton(master=self, text="Refresh", command=self.refresh, height=25, width=80)
+        self.refreshButton.place(x=780, y=117, anchor=tkinter.NE)
 
         self.backButton = customtkinter.CTkButton(master=self, text="Go Back", command=self.backFunction, height=40, width=125)
         self.backButton.place(x=10, y=500, anchor=tkinter.SW)
@@ -431,7 +491,10 @@ class ViewWindow(customtkinter.CTk):
             self.adminLabelAnswer.configure(text_color="green", text="True")
 
     def viewCustomerTrips(self):
-        print("View Trips...")  
+        from trip import TripWindow
+        from datetime import datetime
+        trp = TripWindow(self.email)
+        trp.mainloop()        
 
     def loadData(self):
         from viewSQL import viewTrips
@@ -504,6 +567,10 @@ class ViewWindow(customtkinter.CTk):
 
     def printReport(self):
         print("Report.")
+
+    def refresh(self):
+        self.tripFrame.removeItems()
+        self.loadData()
 
 if __name__ == "__main__":
     test = ViewWindow("omar13")
