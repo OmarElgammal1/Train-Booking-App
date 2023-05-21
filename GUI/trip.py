@@ -73,7 +73,6 @@ class TripWindow(customtkinter.CTk):
         if data == []:
             self.isSearching = False
 
-
         self.tripFrame = ScrollableFrame(master=self, email=self.email, isSearching=self.isSearching, command=self.continueButton, width=560, height=218)
         self.tripFrame.place(x=10, y=10, anchor=tkinter.NW)
 
@@ -105,7 +104,9 @@ class TripWindow(customtkinter.CTk):
     def continueButton(self, item):
         from connect import connect, close
         if self.isSearching:
-            print("....")
+            from view import ViewTripWindow
+            window = ViewTripWindow(item, self.email)
+            window.mainloop()
         else:
             from tripsSQL import cancelTrip
             from extra import getCustomerID
