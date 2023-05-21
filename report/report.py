@@ -12,7 +12,7 @@ output_path = "RailScapeSummaryReport.pdf"
 canvas = canvas.Canvas(output_path , pagesize=letter)
 
 
-# Get the top 5 trains (by trip count) ==> (trainID, trainType, tripsCount)
+# Get the top 5 trains by trip count
 def topTrainsBySeatCount(cursor):
     query = """
         SELECT TOP 5
@@ -24,64 +24,108 @@ def topTrainsBySeatCount(cursor):
         ORDER BY TripsCount DESC; """
     # Run the query and get the results into a list
     results = pnda.DataFrame(cursor.execute(query)).values.tolist()
-    # Parse the resulting list into 5 lists
-    finalList = []
+    # Parse the resulting list into 5 lists after header
+    finalList = [["Train ID", "Train Type", "Number of Trips"]]
     for r in results:
         finalList.append(list(r[0]))
     # Return a list of 5 lists, each list contains exactly three values
     # As follows ==> (trainID, trainType, tripsCount)
-    # Inserts table header
-    finalList.insert(0, ["Train ID", "Train Type", "Number of Trips"])
     return finalList
+
+
+# Get the top 5 trips with most profit
+def topTripsWithMostProfit(cursor):
+    query = f"""
+        SELECT TOP 5
+        trp.tripID AS TripID,
+        trp.trainID AS TrainID,
+        trp.fromLocation AS Source,
+        trp.toLocation AS Destination,
+        (trp.price * (trn.seatCount - COUNT(st.tripID))) AS Profit
+        FROM TRIP trp JOIN TRAIN trn
+        ON trp.trainID = trn.trainID
+        LEFT JOIN SEAT st
+        ON trp.tripID = st.tripID
+        WHERE st.customerID IS NULL
+        GROUP BY
+            trp.tripID,
+            trp.trainID,
+            trp.fromLocation,
+            trp.toLocation,
+            trp.price,
+            trn.seatCount
+        HAVING COUNT(st.tripID) > 0
+        ORDER BY Profit DESC; """
+    # Run the query and get the results into a list
+    results = pnda.DataFrame(cursor.execute(query)).values.tolist()
+    # Parse the resulting list into 5 lists after header
+    finalList = [["Trip ID", "Train ID", "Source", "Destination", "Profit"]]
+    for r in results:
+        finalList.append(list(r[0]))
+    # Return a list of 5 lists, each list contains exactly five values
+    # As follows ==> (tripID, trainID, fromLocation, toLocation, profit)
+    return finalList
+
 
 # Get the top 5 customers
 def topCustomers(cursor):
-    query = '''
-        select top 5 [CUSTOMER].customerID, [CUSTOMER].[name], COUNT([SEAT].seatNum) as numOfSeat
-        from CUSTOMER join SEAT on CUSTOMER.customerID = SEAT.customerID
-        group by [CUSTOMER].customerID,[customer].name
-        order by numOfSeat desc;
-    '''
+    query = """
+        SELECT TOP 5
+        [CUSTOMER].customerID, [CUSTOMER].[name], COUNT([SEAT].seatNum) AS numOfSeat
+        FROM CUSTOMER JOIN SEAT
+        ON CUSTOMER.customerID = SEAT.customerID
+        GROUP BY [CUSTOMER].customerID, [CUSTOMER].name
+        ORDER BY numOfSeat DESC; """
+    # Run the query and get the results into a list
     results = pnda.DataFrame(cursor.execute(query)).values.tolist()
-    finalList = []
+    # Parse the resulting list into 5 lists after header
+    finalList = [["Customer ID", "Customer Name", "Number of Seats"]]
     for r in results:
         finalList.append(list(r[0]))
     # Return a list of 5 lists, each list contains exactly three values
     # As follows ==> (customerID, name, numOfSeat)
-    # Inserts table header
-    finalList.insert(0, ["Customer ID", "Customer Name", "Number of Seats"])
     return finalList
+
+
 # Get the profit per trip
 def profitPerTrip(cursor):
-    query = '''
-        select [SEAT].tripID,[TRIP].fromLocation,[TRIP].toLocation,count([SEAT].seatNum) * [TRIP].price,[TRAIN].seatCount - count([SEAT].seatNum) from SEAT,TRIP,TRAIN
-        where [TRIP].tripID = [SEAT].tripID and [TRIP].trainID = [TRAIN].trainID
-        and customerID is not null
-        and [TRIP].price = (select [TRIP].price from [TRIP] where [TRIP].tripID = [SEAT].tripID)
-        group by [SEAT].tripID,[TRIP].fromLocation,[TRIP].toLocation,[TRIP].price,[TRAIN].seatCount;
-    '''
+    query = """
+        SELECT [SEAT].tripID, [TRIP].fromLocation, [TRIP].toLocation,
+        (COUNT([SEAT].seatNum) * [TRIP].price), ([TRAIN].seatCount - COUNT([SEAT].seatNum)
+        FROM SEAT, TRIP, TRAIN
+        WHERE [TRIP].tripID = [SEAT].tripID
+        AND [TRIP].trainID = [TRAIN].trainID
+        AND customerID IS NOT NULL
+        AND [TRIP].price = (
+            SELECT [TRIP].price FROM [TRIP]
+            WHERE [TRIP].tripID = [SEAT].tripID)
+        GROUP BY [SEAT].tripID, [TRIP].fromLocation,
+        [TRIP].toLocation, [TRIP].price, [TRAIN].seatCount; """
+    # Run the query and get the results into a list
     results = pnda.DataFrame(cursor.execute(query)).values.tolist()
-    finalList = []
+    # Parse the resulting list into 5 lists after header
+    finalList = [["Trip ID", "Source", "Destination", "Price", "Empty Seats"]]
     for r in results:
         finalList.append(list(r[0]))
-
-    # Return a list of lists, each list contains exactly five values
+    # Return a list of 5 lists, each list contains exactly five values
     # As follows ==> (tripID, fromLocation, toLocation, price, emptySeatCount)
-    # Inserts table header
-    finalList.insert(0, ["Trip ID", "From Location", "To Location", "Price", "Empty Seats"])
     return finalList
+
+
 # Function to generate the table data
 def topTrains():
     trains = [
+        ["Train ID", "Train Type", "Number of Trips"],
         ["12345", "Express", "10"],
         ["67890", "Local", "15"],
         ["54321", "Freight", "5"],
         ["98765", "Passenger", "20"],
         ["24680", "High-Speed", "8"]
     ]
-    trains.insert(0, ["Train ID", "Train Type", "Number of Trips"])
     return trains
 
+
+# Main function to generate pdf report
 def generateReport(cursor):
     page_width = 612
     page_height = 792
