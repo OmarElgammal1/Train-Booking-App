@@ -51,7 +51,25 @@ def topCustomers(cursor):
     # Inserts table header
     finalList.insert(0, ["Customer ID", "Customer Name", "Number of Seats"])
     return finalList
+# Get the profit per trip
+def profitPerTrip(cursor):
+    query = '''
+        select [SEAT].tripID,[TRIP].fromLocation,[TRIP].toLocation,count([SEAT].seatNum) * [TRIP].price,[TRAIN].seatCount - count([SEAT].seatNum) from SEAT,TRIP,TRAIN
+        where [TRIP].tripID = [SEAT].tripID and [TRIP].trainID = [TRAIN].trainID
+        and customerID is not null
+        and [TRIP].price = (select [TRIP].price from [TRIP] where [TRIP].tripID = [SEAT].tripID)
+        group by [SEAT].tripID,[TRIP].fromLocation,[TRIP].toLocation,[TRIP].price,[TRAIN].seatCount;
+    '''
+    results = pnda.DataFrame(cursor.execute(query)).values.tolist()
+    finalList = []
+    for r in results:
+        finalList.append(list(r[0]))
 
+    # Return a list of lists, each list contains exactly five values
+    # As follows ==> (tripID, fromLocation, toLocation, price, emptySeatCount)
+    # Inserts table header
+    finalList.insert(0, ["Trip ID", "From Location", "To Location", "Price", "Empty Seats"])
+    return finalList
 # Function to generate the table data
 def topTrains():
     trains = [
