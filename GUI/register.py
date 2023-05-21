@@ -90,6 +90,19 @@ class RegisterWindow(customtkinter.CTk):
             self.nameEntry.configure(state="normal", placeholder_text="Name")
 
     def registerFunction(self):
+
+        status = self.readyToFinish()
+        if status == -1:
+            tkinter.messagebox.showinfo("Error", "Passwords don't match")
+            return
+        elif status == -2:
+            tkinter.messagebox.showinfo("Error", "Please fill out all fields")
+            return
+        elif status == -3:
+            tkinter.messagebox.showinfo("Error", "Email Already Exists")
+            return
+
+        
         from connect import connect, close
         done = False
 
@@ -101,7 +114,7 @@ class RegisterWindow(customtkinter.CTk):
             else:
                 updateUser(connect("Zayat").cursor(), self.admin, self.email, self.passwordEntry.get(), self.nameEntry.get(), self.phoneEntry.get())
 
-            tkinter.messagebox.showinfo("Train Editted", "Success")
+            tkinter.messagebox.showinfo("Profile Editted", "Success")
             done = True
 
         else:
@@ -113,6 +126,7 @@ class RegisterWindow(customtkinter.CTk):
             else:
                 if sign_up(conn, conn.cursor(), self.eMailEntry.get(), self.passwordEntry.get(), self.nameEntry.get(), self.phoneEntry.get()):
                     done = True
+                tkinter.messagebox.showinfo("Profile Created", "Success")
 
         if done:
             from view import ViewWindow
@@ -120,14 +134,48 @@ class RegisterWindow(customtkinter.CTk):
             self.destroy()
             view.mainloop()
 
+    # Returns 
+    #  1 if everything is good
+    # -1 if passwords don't match
+    # -2 if any data is empty
+    # -3 if email exists
+    def readyToFinish(self):
+        if self.edit:
+            if not self.admin:
+                if self.nameEntry.get() == "":
+                    return -2
+                if self.phoneEntry.get() == "":
+                    return -2
+        else:
+
+            from connect import connect
+            from extra import emailExists
+            if emailExists(connect("Zayat").cursor(), self.eMailEntry.get()):
+                return -3
+
+            if not self.adminCheck.get():
+                if self.nameEntry.get() == "":
+                    return -2
+                if self.phoneEntry.get() == "":
+                    return -2
+
+        if self.eMailEntry.get() == "":
+            return -2
+        if self.passwordEntry.get() != self.passwordReEntry.get():
+            return -1
+        if self.passwordEntry.get() == "":
+            return -2
+
+        return 1
+
     def backFunction(self):
 
         if self.edit == True:
+            
             from view import ViewWindow
             view = ViewWindow(self.eMailEntry.get(), self.admin)
             self.destroy()
             view.mainloop()
-
 
         else:
             from app import mainApp
@@ -136,5 +184,5 @@ class RegisterWindow(customtkinter.CTk):
             app.mainloop()
 
 if __name__ == "__main__":
-    test = RegisterWindow(False, False, "")
+    test = RegisterWindow(False, False, "omar")
     test.mainloop()
