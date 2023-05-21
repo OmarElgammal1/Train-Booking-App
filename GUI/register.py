@@ -65,7 +65,7 @@ class RegisterWindow(customtkinter.CTk):
         from userSQL import getInfo
         from connect import connect
         conn = connect("Zayat")
-        data = getInfo(conn, conn.cursor(), self.email, self.admin)
+        data = getInfo(conn.cursor(), self.email, self.admin)
         print(data)
 
         if self.admin == False:
@@ -184,5 +184,5 @@ class RegisterWindow(customtkinter.CTk):
             app.mainloop()
 
 if __name__ == "__main__":
-    test = RegisterWindow(False, False, "omar")
+    test = RegisterWindow(True, True, "omar")
     test.mainloop()
