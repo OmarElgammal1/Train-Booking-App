@@ -28,26 +28,37 @@ class LogInWindow(customtkinter.CTk):
         self.backButton = customtkinter.CTkButton(master=self.formFrame, text="Go Back", command=self.backFunction, height=40, width=80)
         self.backButton.place(relx=0.1, rely=0.9, anchor=tkinter.CENTER)
 
+    def readyToLog(self):
+        if self.passwordEntry.get() == "":
+            return False
+        if self.eMailEntry.get() == "":
+            return False
+
+        return True
+
     def logInFunction(self):
+
+        if not self.readyToLog():
+            tkinter.messagebox.showinfo("Error", "Please enter data in the fields")
+            return
+
         from connect import connect, close
         from userSQL import sign_in
         conn = connect("Zayat")
 
-        if sign_in(conn, conn.cursor(), self.eMailEntry.get(), self.passwordEntry.get(), self.adminCheck.get()):
-            print("True")
-            conn.close()
-
+        if sign_in(conn.cursor(), self.eMailEntry.get(), self.passwordEntry.get(), self.adminCheck.get()):
             from view import ViewWindow
             view = ViewWindow(self.eMailEntry.get(), self.adminCheck.get())
             self.destroy()
             view.mainloop()
-        print("False")
+        else:
+            tkinter.messagebox.showinfo("Error", "Login Credentials Incorrect")
 
     def backFunction(self):
         from app import mainApp
-        self.destroy()
         app = mainApp()
         app.mainloop()
+        self.destroy()
 
 if __name__ == "__main__":
     test = LogInWindow()
