@@ -490,6 +490,7 @@ class ViewWindow(customtkinter.CTk):
             self.adminLabelAnswer.configure(text_color="#A04353", text="False")
         else:
             self.adminLabelAnswer.configure(text_color="green", text="True")
+            self.viewCustomerTripsButton.configure(state="disabled", fg_color="#042970")
 
     def viewCustomerTrips(self):
         from trip import TripWindow
@@ -567,14 +568,18 @@ class ViewWindow(customtkinter.CTk):
             window.mainloop()
 
     def printReport(self):
-        print("Report.")
+        from report.report import generateReport
+        from connect import connect
+        generateReport(connect("Zayat").cursor())
+        tkinter.messagebox.showinfo("Success", "The PDF report has been saved.\nPlease find it in /report")
+        self.printReportButton.configure(state="disabled", fg_color="#042970")
 
     def refresh(self):
         self.tripFrame.removeItems()
         self.loadData()
 
 if __name__ == "__main__":
-    test = ViewWindow("omar13")
-    # test = ViewWindow()
+    # test = ViewWindow("omar13")
+    test = ViewWindow("omar", True)
     # test = ViewWindow()
     test.mainloop()
