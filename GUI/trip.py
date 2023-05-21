@@ -86,6 +86,7 @@ class TripWindow(customtkinter.CTk):
 
     def loadData(self):
         from connect import connect, close
+        from extra import availableSeats
 
         conn = connect("Zayat")
 
@@ -93,15 +94,16 @@ class TripWindow(customtkinter.CTk):
             from viewSQL import viewTripsFiltered
             trips = viewTripsFiltered(conn, conn.cursor(), self.data)
             for i in trips:
+                i[6] = availableSeats(conn.cursor(), i[0])
                 self.tripFrame.addItem(i)
 
         else:
             from extra import getCustomerID
             from tripsSQL import viewCustomerTrips
-            # data = viewCustomerTrips(conn.cursor, getCustomerID(conn.cursor(), self.email))
             trips = viewCustomerTrips(conn.cursor(), '1')
 
             for i in trips:
+                i[6] = availableSeats(conn.cursor(), i[0])
                 self.tripFrame.addItem(i)
 
     def continueButton(self, item):
