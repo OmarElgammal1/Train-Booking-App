@@ -125,16 +125,16 @@ class AdminTripWindow(customtkinter.CTk):
             from updateSQL import updateTrip
             updateTrip(connect("Zayat").cursor(), [int(self.tripData[0]), int(self.trainID.get()), self.fromEntry.get(), self.toEntry.get(), 
                 datetime.strptime(self.depTimeEntry.get(), '%y/%m/%d %H:%M:%S'), float(self.priceEntry.get())])
-            tkinter.messagebox.showinfo("Train Editted", "Success")
+            tkinter.messagebox.showinfo("Trip Editted", "Success")
             self.destroy()
         else:
             from addSQL import addTrip
             if(addTrip(connect("Zayat").cursor(), [int(self.trainID.get()), self.fromEntry.get(), self.toEntry.get(), 
                 datetime.strptime(self.depTimeEntry.get(), '%y/%m/%d %H:%M:%S'), float(self.priceEntry.get())])):
-                tkinter.messagebox.showinfo("Train Added", "Success")
+                tkinter.messagebox.showinfo("Trip Added", "Success")
                 self.destroy()
             else:
-                tkinter.messagebox.showinfo("Train Add Failed", "Train has another trip")
+                tkinter.messagebox.showinfo("Trip Add Failed", "Train has another trip")
 
 class ViewTripWindow(customtkinter.CTk):
     def __init__(self, data, email):
@@ -184,7 +184,7 @@ class ViewTripWindow(customtkinter.CTk):
         cust_ID = getCustomerID(connect("Zayat").cursor(), self.email)
 
         if(bookTrip(connect("Zayat").cursor(), cust_ID, int(self.data[0]), int(self.ticketNum.get()))):
-            tkinter.messagebox.showinfo("Train Editted", "Success")
+            tkinter.messagebox.showinfo("Trip Booked", "Success")
             self.destroy()
 
 class TrainWindow(customtkinter.CTk):
@@ -255,13 +255,14 @@ class TrainWindow(customtkinter.CTk):
             from updateSQL import updateTrain
             from connect import connect
             updateTrain(connect("Zayat").cursor(), [int(self.trainSeats.get()), self.trainName.get(), int(self.trainID.get())])
+            tkinter.messagebox.showinfo("Train Editted", "Success")
         else:
             from connect import connect
             from addSQL import addTrain
             conn = connect("Zayat")
             addTrain(conn.cursor(), [int(self.trainSeats.get()), self.trainName.get()])
+            tkinter.messagebox.showinfo("Train Added", "Success")
 
-        tkinter.messagebox.showinfo("Train Editted", "Success")
         self.destroy()
 
 class ScrollableFrame(customtkinter.CTkScrollableFrame):
@@ -269,7 +270,9 @@ class ScrollableFrame(customtkinter.CTkScrollableFrame):
     def __init__(self, master, email="", isAdmin=False, command=None, **kwargs):
         
         super().__init__(master, **kwargs)
-        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure((0,1,6,7,8), weight=1)
+        self.grid_columnconfigure((2,3), weight=4)
+        self.grid_columnconfigure((4,5), weight=1)
         self.command = command
         self.labelList = []
         self.buttonList = []
@@ -277,15 +280,15 @@ class ScrollableFrame(customtkinter.CTkScrollableFrame):
         self.isAdmin = isAdmin
         
     def addItem(self, item):
-        tripLabel = customtkinter.CTkLabel(self, text=item[0], compound="left", padx=10)
-        trainLabel = customtkinter.CTkLabel(self, text=item[1], compound="left", padx=10)
-        fromLabel = customtkinter.CTkLabel(self, text=item[2], compound="left", padx=10)
-        toLabel = customtkinter.CTkLabel(self, text=item[3], compound="left", padx=10)
-        dateLabel = customtkinter.CTkLabel(self, text=item[4], compound="left", padx=10)
-        timeLabel = customtkinter.CTkLabel(self, text=item[5], compound="left", padx=10)
-        seatsLabel = customtkinter.CTkLabel(self, text=item[6], compound="left", padx=10)
-        priceLabel = customtkinter.CTkLabel(self, text=item[7], compound="left", padx=10)
-        button = customtkinter.CTkButton(self, text="View", width=80, height=30)
+        tripLabel = customtkinter.CTkLabel(self, text=item[0], compound="left", font=customtkinter.CTkFont(size=12))
+        trainLabel = customtkinter.CTkLabel(self, text=item[1], compound="left", font=customtkinter.CTkFont(size=12))
+        fromLabel = customtkinter.CTkLabel(self, text=item[2], compound="left", font=customtkinter.CTkFont(size=12))
+        toLabel = customtkinter.CTkLabel(self, text=item[3], compound="left", font=customtkinter.CTkFont(size=12))
+        dateLabel = customtkinter.CTkLabel(self, text=item[4], compound="left", font=customtkinter.CTkFont(size=12))
+        timeLabel = customtkinter.CTkLabel(self, text=item[5], compound="left", font=customtkinter.CTkFont(size=12))
+        seatsLabel = customtkinter.CTkLabel(self, text=item[6], compound="left", font=customtkinter.CTkFont(size=12))
+        priceLabel = customtkinter.CTkLabel(self, text=item[7], compound="right", font=customtkinter.CTkFont(size=12))
+        button = customtkinter.CTkButton(self, text="View", width=69, compound="right", height=30)
 
         if self.email=="":
             button.configure(state="disabled", fg_color="#042970")
@@ -304,7 +307,7 @@ class ScrollableFrame(customtkinter.CTkScrollableFrame):
         timeLabel.grid(row=len(self.labelList), column=5, pady=(0,10))
         seatsLabel.grid(row=len(self.labelList), column=6, pady=(0,10))
         priceLabel.grid(row=len(self.labelList), column=7, pady=(0,10))
-        button.grid(row=len(self.buttonList), column=8, pady=(0,10), padx=5)
+        button.grid(row=len(self.buttonList), column=8, pady=(0,10))
 
         self.labelList.append([tripLabel, trainLabel, fromLabel, toLabel, dateLabel, timeLabel, seatsLabel, priceLabel])
         self.buttonList.append(button)
@@ -353,10 +356,13 @@ class ViewWindow(customtkinter.CTk):
         self.tripFrame.place(x=790, y=500, anchor=tkinter.SE)
 
 
-        self.labelHead = customtkinter.CTkLabel(master=self, text="       Trip             From                       To                     Date      Seats", 
-            width=445, height=20, anchor="w")
-            
+        self.labelHead = customtkinter.CTkLabel(master=self, text="   Trip  Train              From                                   To" + 
+        "                            Date                   Time                    Price", width=445, height=20, anchor="w")
         self.labelHead.place(x=145, y=120 ,anchor=tkinter.NW)
+
+        self.labelHead2 = customtkinter.CTkLabel(master=self, text="Available\nSeats")
+        self.labelHead2.place(x=605, y=115, anchor=tkinter.NW)
+
 
         self.loadData()
 
@@ -463,8 +469,30 @@ class ViewWindow(customtkinter.CTk):
         app = mainApp()
         app.mainloop()
 
+    def readyForSearch(self):
+        if self.fromEntry.get() == "": 
+            return False
+        if self.toEntry.get() == "": 
+            return False
+        if self.startEntry.get() == "": 
+            return False
+        if self.endEntry.get() == "":
+            return False
+        if self.ticketEntry.get() == "":
+            return False
+        return True
+
     def search(self):
-        self.tripFrame.removeItems()
+
+        if not self.readyForSearch():
+            tkinter.messagebox.showinfo("Invalid Info", "Please enter all the data in their correct formats\nDate: yy/mm/dd hh:mm:ss")
+            return
+
+        from trip import TripWindow
+        from datetime import datetime
+        trp = TripWindow(self.email, [self.fromEntry.get(), self.toEntry.get(), 
+            datetime.strptime(self.startEntry.get(), '%y/%m/%d %H:%M:%S'), datetime.strptime(self.endEntry.get(), '%y/%m/%d %H:%M:%S'), int(self.ticketEntry.get())])
+        trp.mainloop()
 
     def viewButton(self, item):
         if self.isAdmin:
@@ -478,5 +506,7 @@ class ViewWindow(customtkinter.CTk):
         print("Report.")
 
 if __name__ == "__main__":
-    test = ViewWindow()
+    test = ViewWindow("omar13")
+    # test = ViewWindow()
+    # test = ViewWindow()
     test.mainloop()
