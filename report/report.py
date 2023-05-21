@@ -118,8 +118,8 @@ def generateReport(cursor):
     table_data = topTrainsBySeatCount(cursor)
 
     # Load fonts
-    pdfmetrics.registerFont(TTFont("Arial", "arial.ttf"))
-    pdfmetrics.registerFont(TTFont("Arial-Bold", "arial-bold.ttf"))
+    pdfmetrics.registerFont(TTFont("C:\\Users\\youse\\Documents\\GitHub\\DB-Project\\GUI\\report\\Arial", "arial.ttf"))
+    pdfmetrics.registerFont(TTFont("C:\\Users\\youse\\Documents\\GitHub\\DB-Project\\GUI\\report\\Arial-Bold", "arial-bold.ttf"))
 
     # Set font and font size for the title
     canvas.setFont("Arial-Bold", 24)
@@ -129,8 +129,8 @@ def generateReport(cursor):
     canvas.drawCentredString(page_width/2, 750, title)  # Adjust the position as desired
 
     # Add the icons
-    canvas.drawImage("icon.jpg", x = 50, y = 730, width =50,height = 50, preserveAspectRatio=True)  # Adjust the position and size as desired
-    canvas.drawImage("icon-reversed.jpg", x = page_width - 100, y = 730, width =50,height = 50, preserveAspectRatio=True)  # Adjust the position and size as desired
+    canvas.drawImage("C:\\Users\\youse\\Documents\\GitHub\\DB-Project\\GUI\\report\\icon.jpg", x = 50, y = 730, width =50,height = 50, preserveAspectRatio=True)  # Adjust the position and size as desired
+    canvas.drawImage("C:\\Users\\youse\\Documents\\GitHub\\DB-Project\\GUI\\report\\icon-reversed.jpg", x = page_width - 100, y = 730, width =50,height = 50, preserveAspectRatio=True)  # Adjust the position and size as desired
 
     # Set font and font size for the subtitle
     canvas.setFont("Arial", 18)
