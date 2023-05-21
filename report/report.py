@@ -9,8 +9,7 @@ import pandas as pnda
 
 # Create a new Canvas object based on the template
 output_path = "RailScapeSummaryReport.pdf"
-canvas = canvas.Canvas(output_path , pagesize=letter)
-
+canvas = canvas.Canvas(output_path, pagesize=letter)
 
 # Get the top 5 trains by trip count
 def topTrainsBySeatCount(cursor):
@@ -79,7 +78,7 @@ def topCustomers(cursor):
     # Run the query and get the results into a list
     results = pnda.DataFrame(cursor.execute(query)).values.tolist()
     # Parse the resulting list into 5 lists after header
-    finalList = [["Customer ID", "Customer Name", "Number of Seats"]]
+    finalList = [["Customer ID", "Customer Name", "Tickets Bought"]]
     for r in results:
         finalList.append(list(r[0]))
     # Return a list of 5 lists, each list contains exactly three values
@@ -91,7 +90,7 @@ def topCustomers(cursor):
 def profitPerTrip(cursor):
     query = """
         SELECT [SEAT].tripID, [TRIP].fromLocation, [TRIP].toLocation,
-        (COUNT([SEAT].seatNum) * [TRIP].price), ([TRAIN].seatCount - COUNT([SEAT].seatNum)
+        (COUNT([SEAT].seatNum) * [TRIP].price), ([TRAIN].seatCount - COUNT([SEAT].seatNum))
         FROM SEAT, TRIP, TRAIN
         WHERE [TRIP].tripID = [SEAT].tripID
         AND [TRIP].trainID = [TRAIN].trainID
@@ -111,28 +110,12 @@ def profitPerTrip(cursor):
     # As follows ==> (tripID, fromLocation, toLocation, price, emptySeatCount)
     return finalList
 
-
-# Function to generate the table data
-def topTrains():
-    trains = [
-        ["Train ID", "Train Type", "Number of Trips"],
-        ["12345", "Express", "10"],
-        ["67890", "Local", "15"],
-        ["54321", "Freight", "5"],
-        ["98765", "Passenger", "20"],
-        ["24680", "High-Speed", "8"]
-    ]
-    return trains
-
-
-# Main function to generate pdf report
 def generateReport(cursor):
     page_width = 612
     page_height = 792
 
     # Define the table data
-    table_data = topTrains()
-    # table_data = topTrainsBySeatCount(cursor)
+    table_data = topTrainsBySeatCount(cursor)
 
     # Load fonts
     pdfmetrics.registerFont(TTFont("Arial", "arial.ttf"))
@@ -154,7 +137,7 @@ def generateReport(cursor):
 
     # Add the text subtitle
     subtitle = "Top 5 trains by trip count:"
-    canvas.drawString(50, 650, subtitle)  # Adjust the position as desired
+    canvas.drawString(50, 650, subtitle)  
 
     # Create the table
     table = Table(table_data)
@@ -179,7 +162,56 @@ def generateReport(cursor):
 
     # Calculate table height to fit on the page
     table.wrapOn(canvas, 500, 400)
-    table.drawOn(canvas, 150, 500)
+    table.drawOn(canvas, 200, 500)
 
+    # Set font and font size for the subtitle
+    canvas.setFont("Arial", 18)
+
+    # Add the text subtitle right after the table
+    subtitle = "Top 5 customers by seat count:"
+    canvas.drawString(50, 400, subtitle)  # Adjust the position as desired
+    # Create the table
+    table = Table(topCustomers(cursor))
+    # Set the table style
+    table.setStyle(table_style)
+    # Set the table width
+    table._width = 500
+    # Calculate table height to fit on the page
+    table.wrapOn(canvas, 500, 400)
+    table.drawOn(canvas, 175, 250)
+    
+
+    # New page
+    canvas.showPage()
+
+    # Set font and font size for the subtitle
+    canvas.setFont("Arial", 18)
+    # Add the text subtitle right after the table
+    subtitle = "Top 5 trips by profit:"
+    canvas.drawString(50, 750, subtitle)  # Adjust the position as desired
+    # Create the table
+    table = Table(topTripsWithMostProfit(cursor))
+    # Set the table style
+    table.setStyle(table_style)
+    # Set the table width
+    table._width = 500
+    # Calculate table height to fit on the page
+    table.wrapOn(canvas, 500, 400)
+    table.drawOn(canvas, 175, 600)
+
+    # Set font and font size for the subtitle
+    canvas.setFont("Arial", 18)
+    # Add the text subtitle right after the table
+    subtitle = "Profit for All Trips:"
+    canvas.drawString(50, 500, subtitle)  # Adjust the position as desired
+
+    # Create a table in a loop that adds a new page if the table height is more than the page height
+    # cause the table might take multiple pages (nRows undefined)
+    table_data = profitPerTrip(cursor)
+    table = Table(table_data)
+    table.setStyle(table_style)
+    table._width = 500
+    table.wrapOn(canvas, 500, 400)
+    table.drawOn(canvas, 175, 350)
     # Save the modified PDF
     canvas.save()
