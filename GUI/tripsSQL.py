@@ -1,22 +1,25 @@
+# Book certain trip for certain customer
 def bookTrip(cursor, customerID, tripID, nSeats):
     # Check if the customer is already booked on the trip
     cursor.execute(f"""
         UPDATE TOP ({nSeats}) SEAT
         SET customerID = '{customerID}'
-        WHERE (tripID = '{tripID}' AND customerID IS NULL);
-    """)
+        WHERE (tripID = '{tripID}'
+        AND customerID IS NULL); """)
     cursor.commit()
-    return True;
+    return True
 
+# Cancel certain trip for certain customer
 def cancelTrip(cursor, customerID, tripID):
     # Check if the customer is already booked on the trip
     cursor.execute(f"""
         UPDATE SEAT
         SET customerID = NULL
-        WHERE (tripID = '{tripID}' AND customerID = '{customerID}');
-    """)
-    return True;
+        WHERE (tripID = '{tripID}'
+        AND customerID = '{customerID}'); """)
+    return True
 
+# View certain customer trips
 def viewCustomerTrips(cursor, customerID):
     cursor.execute(f"""
         SELECT SEAT.tripID, TRIP.trainID, TRIP.fromLocation, TRIP.toLocation, TRIP.depTime, COUNT(SEAT.seatNum) AS TotalSeats, TRIP.price
@@ -41,4 +44,4 @@ def viewCustomerTrips(cursor, customerID):
             else:
                 res.append(el[0])
         result_list.append(res)
-    return result_list;
+    return result_list

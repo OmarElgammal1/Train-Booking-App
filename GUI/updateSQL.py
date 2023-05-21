@@ -6,8 +6,7 @@ def updateTrain(cursor, trainData):
         UPDATE TRAIN
         SET seatCount = {trainData[0]},
         trainType = '{trainData[1]}'
-        WHERE trainID = {trainData[2]};
-    """)
+        WHERE trainID = {trainData[2]}; """)
     cursor.commit()
 
 
@@ -23,19 +22,19 @@ def updateTrip(cursor, tripData):
         depTime = '{tripData[4]}',
         price = {tripData[5]}
         WHERE tripID = {tripData[0]};
-        delete SEAT
-        where tripID = {tripData[0]};
-        Declare @seatCount int
-        declare @i int = 0
-        select @seatCount = seatCount from train where trainID  = {tripData[1]};
-        while @i < @seatCount
-        begin
-        set @i = @i + 1
-        insert into SEAT (Seat.tripID)
-        select TRIP.tripID from TRIP
-        where TRIP.tripID = {tripData[0]};
-        end
-    """)
+        DELETE SEAT
+        WHERE tripID = {tripData[0]};
+        DECLARE @seatCount INT
+        DECLARE @i INT = 0
+        SELECT @seatCount = seatCount FROM TRAIN
+        WHERE trainID  = {tripData[1]};
+        WHILE @i < @seatCount
+        BEGIN
+            SET @i = @i + 1
+            INSERT INTO SEAT (SEAT.tripID)
+            SELECT TRIP.tripID FROM TRIP
+            WHERE TRIP.tripID = {tripData[0]};
+        END """)
     cursor.commit()
 
 

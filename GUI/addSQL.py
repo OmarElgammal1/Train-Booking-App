@@ -22,7 +22,6 @@ def addTrip(cursor, tripData):
         cursor.commit()
     else:
         return False
-    
     # Select query to get the trip ID
     selectQuery = f"""
         SELECT tripID FROM TRIP
@@ -52,17 +51,3 @@ def addTrip(cursor, tripData):
         trainSeatCount -= 1
     cursor.commit()
     return True
-
-# # Testing the addition of a new train
-# # test = [500, 'Express']
-# # addTrain(test)
-
-# # Testing the addition of a new trip
-# # test = [1, 'Tanta', 'Cairo', '2024-07-25 07:30:00', 50.0]
-# # addTrip(test)
-
-# # Close the cursor and the connection
-# if not conn.closed:
-#     cursor.close()
-#     conn.close()
-#     print("Connection Closed!")
