@@ -118,19 +118,19 @@ def generateReport(cursor):
     table_data = topTrainsBySeatCount(cursor)
 
     # Load fonts
-    pdfmetrics.registerFont(TTFont("C:\\Users\\youse\\Documents\\GitHub\\DB-Project\\GUI\\report\\Arial", "arial.ttf"))
-    pdfmetrics.registerFont(TTFont("C:\\Users\\youse\\Documents\\GitHub\\DB-Project\\GUI\\report\\Arial-Bold", "arial-bold.ttf"))
+    pdfmetrics.registerFont(TTFont("Arial", "report/arial.ttf"))
+    pdfmetrics.registerFont(TTFont("Arial-Bold", "report/arial-bold.ttf"))
 
     # Set font and font size for the title
     canvas.setFont("Arial-Bold", 24)
 
     # Add the title
     title = "RailScape Summary Report"
-    canvas.drawCentredString(page_width/2, 750, title)  # Adjust the position as desired
+    canvas.drawCentredString(page_width / 2, 750, title)  # Adjust the position as desired
 
     # Add the icons
-    canvas.drawImage("C:\\Users\\youse\\Documents\\GitHub\\DB-Project\\GUI\\report\\icon.jpg", x = 50, y = 730, width =50,height = 50, preserveAspectRatio=True)  # Adjust the position and size as desired
-    canvas.drawImage("C:\\Users\\youse\\Documents\\GitHub\\DB-Project\\GUI\\report\\icon-reversed.jpg", x = page_width - 100, y = 730, width =50,height = 50, preserveAspectRatio=True)  # Adjust the position and size as desired
+    canvas.drawImage("report/icon.jpg", x = 50, y = 730, width =50,height = 50, preserveAspectRatio=True)  # Adjust the position and size as desired
+    canvas.drawImage("report/icon-reversed.jpg", x = page_width - 100, y = 730, width =50,height = 50, preserveAspectRatio=True)  # Adjust the position and size as desired
 
     # Set font and font size for the subtitle
     canvas.setFont("Arial", 18)
@@ -149,7 +149,7 @@ def generateReport(cursor):
         ("TEXTCOLOR", (0, 0), (-1, 0), "black"),  # Text color for header row
         ("ALIGN", (0, 0), (-1, -1), "CENTER"),  # Center alignment for all cells
         ("FONTNAME", (0, 1), (-1, -1), "Helvetica"),  # Font for data rows
-        ("FONTSIZE", (0, 1), (-1, -1), 10),  # Font size for data rows
+        ("FONTSIZE", (0, 1), (-1, -1), 14),  # Font size for data rows
         ("BOTTOMPADDING", (0, 0), (-1, 0), 12),  # Bottom padding for header row
         ("BACKGROUND", (0, 1), (-1, -1), "white"),  # Background color for data rows
         ("GRID", (0, 0), (-1, -1), 0.5, "black"),  # Grid lines
@@ -158,10 +158,10 @@ def generateReport(cursor):
     table.setStyle(table_style)
 
     # Set the table width
-    table._width = 500
+    table._width = 800
 
     # Calculate table height to fit on the page
-    table.wrapOn(canvas, 500, 400)
+    table.wrapOn(canvas, 800, 400)
     table.drawOn(canvas, 200, 500)
 
     # Set font and font size for the subtitle
@@ -175,9 +175,9 @@ def generateReport(cursor):
     # Set the table style
     table.setStyle(table_style)
     # Set the table width
-    table._width = 500
+    table._width = 800
     # Calculate table height to fit on the page
-    table.wrapOn(canvas, 500, 400)
+    table.wrapOn(canvas, 800, 400)
     table.drawOn(canvas, 175, 250)
     
 
@@ -194,9 +194,9 @@ def generateReport(cursor):
     # Set the table style
     table.setStyle(table_style)
     # Set the table width
-    table._width = 500
+    table._width = 800
     # Calculate table height to fit on the page
-    table.wrapOn(canvas, 500, 400)
+    table.wrapOn(canvas, 800, 400)
     table.drawOn(canvas, 175, 600)
 
     # Set font and font size for the subtitle
@@ -210,8 +210,8 @@ def generateReport(cursor):
     table_data = profitPerTrip(cursor)
     table = Table(table_data)
     table.setStyle(table_style)
-    table._width = 500
-    table.wrapOn(canvas, 500, 400)
+    table._width = 800
+    table.wrapOn(canvas, 800, 400)
     table.drawOn(canvas, 175, 350)
     # Save the modified PDF
     canvas.save()
