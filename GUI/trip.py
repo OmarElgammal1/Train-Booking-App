@@ -100,7 +100,7 @@ class TripWindow(customtkinter.CTk):
         else:
             from extra import getCustomerID
             from tripsSQL import viewCustomerTrips
-            trips = viewCustomerTrips(conn.cursor(), '1')
+            trips = viewCustomerTrips(conn.cursor(), getCustomerID(conn.cursor(), self.email))
 
             for i in trips:
                 self.tripFrame.addItem(i)

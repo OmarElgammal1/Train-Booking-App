@@ -580,4 +580,5 @@ class ViewWindow(customtkinter.CTk):
 
 if __name__ == "__main__":
     test = ViewWindow()
+    test = ViewWindow("salah@gmail.com")
     test.mainloop()
