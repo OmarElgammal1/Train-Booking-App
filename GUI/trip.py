@@ -103,7 +103,6 @@ class TripWindow(customtkinter.CTk):
             trips = viewCustomerTrips(conn.cursor(), '1')
 
             for i in trips:
-                i[6] = availableSeats(conn.cursor(), i[0])
                 self.tripFrame.addItem(i)
 
     def continueButton(self, item):
