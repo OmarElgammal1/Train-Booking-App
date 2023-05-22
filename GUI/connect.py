@@ -1,24 +1,23 @@
+# Import necessary libraries
 import pyodbc as odbc
 import sys
 
-def connect(SERVER_NAME):
-    DATABASE_NAME = 'TrainBooking'
-
-    connection_string = f"""
-        DRIVER={"SQL SERVER"};
-        SERVER={SERVER_NAME};
-        DATABASE={DATABASE_NAME};
-        Trust_Connection=yes;
-    """
-
+# Connect to our database TrainBooking
+# Run ```SELECT @@SERVERNAME``` on MS SQL server to find YOUR_SERVER_NAME
+def connect():
     try:
-        conn = odbc.connect(connection_string)
+        connection = odbc.connect(f"""
+            DRIVER={"SQL SERVER"};
+            SERVER={"YOUR_SERVER_NAME"};
+            DATABASE={"TrainBooking"};
+            Trust_Connection=yes; """)
     except Exception as e:
         print(e)
         print("Task is Terminated!")
         sys.exit(0)
+    return connection
 
-    return conn
-
-def close(conn):
-    conn.close()
+# Close & end the connection with the database
+def close(connection):
+    if not connection.closed:
+        connection.close()
