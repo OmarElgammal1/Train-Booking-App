@@ -11,6 +11,7 @@ def tripEmpty(cursor, tripID):
     else:
         return False
 
+
 # Check for remaining available seats in a certain trip
 def availableSeats(cursor, tripID):
     # Import necessary library
@@ -21,6 +22,7 @@ def availableSeats(cursor, tripID):
     """)).values.tolist()[0][0][0]
     return remainingSeats
 
+
 # Check if a certain email is already registered
 def emailExists(cursor, email):
     cursor.execute(f" SELECT email FROM [USER] WHERE email = '{email}'; ")
@@ -29,8 +31,19 @@ def emailExists(cursor, email):
     else:
         return False
 
+
 # Get certain customerID from his/her email
 def getCustomerID(cursor, email):
     cursor.execute(f" SELECT customerID FROM CUSTOMER WHERE email = '{email}'; ")
     queryResult = cursor.fetchone()
     return queryResult[0]
+
+
+# Check if certain train has trips or not
+def trainFree(cursor, trainID):
+    cursor.execute(f" SELECT trainID FROM TRIP WHERE trainID = {trainID}; ")
+    # If the train has trips allocated to it cannot delete, return False
+    if cursor.fetchone() is not None:
+        return False
+    # Otherwise, the train is free and ready for deletion, return True
+    return True
