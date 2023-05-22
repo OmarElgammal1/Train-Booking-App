@@ -37,8 +37,8 @@ def sign_up(cursor, email, password, *args):
             WHERE [USER].email LIKE '{email}'; """
         cursor.execute(insertEmailAndPassQuery)
         cursor.commit()
-        adminID = pnda.DataFrame(cursor.execute(f" SELECT adminID FROM ADMIN WHERE email = '{email}'; "))
-        return adminID[0][0][0]
+        # adminID = pnda.DataFrame(cursor.execute(f" SELECT adminID FROM ADMIN WHERE email = '{email}'; "))
+        return True
     # If the user is CUSTOMER
     else:
         insertCustomerDataQuery = f"""
@@ -48,8 +48,8 @@ def sign_up(cursor, email, password, *args):
             WHERE [USER].email LIKE '{email}'; """
         cursor.execute(insertCustomerDataQuery)
         cursor.commit()
-        customerID = pnda.DataFrame(cursor.execute(f" SELECT customerID FROM CUSTOMER WHERE email = '{email}'; "))
-        return customerID[0][0][0]
+        # customerID = pnda.DataFrame(cursor.execute(f" SELECT customerID FROM CUSTOMER WHERE email = '{email}'; "))
+        return True
 
 # Get certain user information via email
 def getInfo(cursor, email, admin):
