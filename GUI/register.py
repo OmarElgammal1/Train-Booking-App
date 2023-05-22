@@ -105,12 +105,14 @@ class RegisterWindow(customtkinter.CTk):
         
         from connect import connect, close
         done = False
+        userIsAdmin = False
 
         if self.edit == True:
             from updateSQL import updateUser
 
             if self.admin:
                 updateUser(connect().cursor(), self.admin, self.email, self.passwordEntry.get())
+                userIsAdmin = True
             else:
                 updateUser(connect().cursor(), self.admin, self.email, self.passwordEntry.get(), self.nameEntry.get(), self.phoneEntry.get())
 
@@ -121,6 +123,7 @@ class RegisterWindow(customtkinter.CTk):
             from userSQL import sign_up
             conn = connect()
             if self.adminCheck.get():
+                userIsAdmin = True
                 if sign_up(conn.cursor(), self.eMailEntry.get(), self.passwordEntry.get()):
                     done = True
             else:
@@ -130,7 +133,7 @@ class RegisterWindow(customtkinter.CTk):
 
         if done:
             from view import ViewWindow
-            view = ViewWindow(self.eMailEntry.get(), self.admin)
+            view = ViewWindow(self.eMailEntry.get(), userIsAdmin)
             self.destroy()
             view.mainloop()
 
