@@ -88,7 +88,7 @@ class TripWindow(customtkinter.CTk):
         from connect import connect, close
         from extra import availableSeats
 
-        conn = connect("Zayat")
+        conn = connect()
 
         if self.isSearching:
             from viewSQL import viewTripsFiltered
@@ -114,14 +114,14 @@ class TripWindow(customtkinter.CTk):
         else:
             from tripsSQL import cancelTrip
             from extra import getCustomerID
-            conn = connect("Zayat")
+            conn = connect()
             cancelTrip(conn.cursor(), getCustomerID(conn.cursor(), self.email), item[0])
             conn.commit()
             self.tripFrame.removeItems()
             self.loadData()
 
 if __name__ == "__main__":
-    test = TripWindow("omar13", ["Cairo", "Hell", datetime.strptime("22/05/15 18:00:00", '%y/%m/%d %H:%M:%S'), 
-        datetime.strptime("24/05/15 18:00:00", '%y/%m/%d %H:%M:%S'), 15])
-    # test = TripWindow("omar13")
+    # test = TripWindow("omar13", ["Cairo", "Hell", datetime.strptime("22/05/15 18:00:00", '%y/%m/%d %H:%M:%S'), 
+    #     datetime.strptime("24/05/15 18:00:00", '%y/%m/%d %H:%M:%S'), 15])
+    test = TripWindow()
     test.mainloop()

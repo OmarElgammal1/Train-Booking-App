@@ -1,6 +1,5 @@
 import tkinter
 import customtkinter
-# from admin import AdminWindow
 from login import LogInWindow
 from register import RegisterWindow
 from view import ViewWindow

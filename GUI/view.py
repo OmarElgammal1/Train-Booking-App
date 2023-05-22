@@ -77,7 +77,7 @@ class AdminTripWindow(customtkinter.CTk):
     def isEditable(self, tripID):
         from extra import tripEmpty
         from connect import connect
-        return tripEmpty(connect("Zayat").cursor(), tripID)
+        return tripEmpty(connect().cursor(), tripID)
 
     def adminTripReady(self):
         import re
@@ -141,7 +141,7 @@ class AdminTripWindow(customtkinter.CTk):
     def loadCheckBox(self):
         from viewSQL import viewTrains
         from connect import connect
-        conn = connect("Zayat")
+        conn = connect()
         self.data = viewTrains(conn, conn.cursor())
         trainIDs = []
         for i in self.data:
@@ -158,13 +158,13 @@ class AdminTripWindow(customtkinter.CTk):
         from datetime import datetime
         if self.edit:
             from updateSQL import updateTrip
-            updateTrip(connect("Zayat").cursor(), [int(self.tripData[0]), int(self.trainID.get()), self.fromEntry.get(), self.toEntry.get(), 
+            updateTrip(connect().cursor(), [int(self.tripData[0]), int(self.trainID.get()), self.fromEntry.get(), self.toEntry.get(), 
                 datetime.strptime(self.depTimeEntry.get(), '%y/%m/%d %H:%M:%S'), float(self.priceEntry.get())])
-            tkinter.messagebox.showinfo("Trip Editted", "Success")
+            tkinter.messagebox.showinfo("Trip Edited", "Success")
             self.destroy()
         else:
             from addSQL import addTrip
-            if(addTrip(connect("Zayat").cursor(), [int(self.trainID.get()), self.fromEntry.get(), self.toEntry.get(), 
+            if(addTrip(connect().cursor(), [int(self.trainID.get()), self.fromEntry.get(), self.toEntry.get(), 
                 datetime.strptime(self.depTimeEntry.get(), '%y/%m/%d %H:%M:%S'), float(self.priceEntry.get())])):
                 tkinter.messagebox.showinfo("Trip Added", "Success")
                 self.destroy()
@@ -221,9 +221,9 @@ class ViewTripWindow(customtkinter.CTk):
         from extra import getCustomerID
         from tripsSQL import bookTrip
 
-        cust_ID = getCustomerID(connect("Zayat").cursor(), self.email)
+        cust_ID = getCustomerID(connect().cursor(), self.email)
 
-        if(bookTrip(connect("Zayat").cursor(), cust_ID, int(self.data[0]), int(self.ticketNum.get()))):
+        if(bookTrip(connect().cursor(), cust_ID, int(self.data[0]), int(self.ticketNum.get()))):
             tkinter.messagebox.showinfo("Trip Booked", "Success")
             self.destroy()
 
@@ -283,7 +283,7 @@ class TrainWindow(customtkinter.CTk):
     def loadCheckBox(self):
         from viewSQL import viewTrains
         from connect import connect
-        conn = connect("Zayat")
+        conn = connect()
         self.data = viewTrains(conn, conn.cursor())
         trainIDs = []
         for i in self.data:
@@ -309,12 +309,12 @@ class TrainWindow(customtkinter.CTk):
             return
 
         from connect import connect
-        cursor = connect("Zayat").cursor()
+        cursor = connect().cursor()
 
         if self.isEditing:
             from updateSQL import updateTrain
             updateTrain(cursor, [int(self.trainSeats.get()), self.trainName.get(), int(self.trainID.get())])
-            tkinter.messagebox.showinfo("Train Editted", "Success")
+            tkinter.messagebox.showinfo("Train Edited", "Success")
         else:
             from addSQL import addTrain
             addTrain(cursor, [int(self.trainSeats.get()), self.trainName.get()])
@@ -502,7 +502,7 @@ class ViewWindow(customtkinter.CTk):
         from viewSQL import viewTrips
         from connect import connect, close
         from extra import availableSeats
-        conn = connect("Zayat")
+        conn = connect()
 
         data = viewTrips(conn, conn.cursor())
 
@@ -570,7 +570,7 @@ class ViewWindow(customtkinter.CTk):
     def printReport(self):
         from report.report import generateReport
         from connect import connect
-        generateReport(connect("Zayat").cursor())
+        generateReport(connect().cursor())
         tkinter.messagebox.showinfo("Success", "The PDF report has been saved.\nPlease find it in /report")
         self.printReportButton.configure(state="disabled", fg_color="#042970")
 
@@ -579,7 +579,5 @@ class ViewWindow(customtkinter.CTk):
         self.loadData()
 
 if __name__ == "__main__":
-    # test = ViewWindow("omar13")
-    test = ViewWindow("omar", True)
-    # test = ViewWindow()
+    test = ViewWindow()
     test.mainloop()

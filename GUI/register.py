@@ -1,6 +1,5 @@
 import tkinter
 import customtkinter
-# from app import mainApp
 
 
 class RegisterWindow(customtkinter.CTk):
@@ -13,9 +12,9 @@ class RegisterWindow(customtkinter.CTk):
 
         self.winTitle = ""
         if edit:
-            self.winTitle = "Edit"
+            self.winTitle = "Edit Existing User"
         else:
-            self.winTitle = "Register"
+            self.winTitle = "Register New User"
 
         self.geometry("500x300")
         self.resizable(0, 0)
@@ -65,7 +64,7 @@ class RegisterWindow(customtkinter.CTk):
 
         from userSQL import getInfo
         from connect import connect
-        conn = connect("Zayat")
+        conn = connect()
         data = getInfo(conn.cursor(), self.email, self.admin)
         print(data)
 
@@ -111,16 +110,16 @@ class RegisterWindow(customtkinter.CTk):
             from updateSQL import updateUser
 
             if self.admin:
-                updateUser(connect("Zayat").cursor(), self.admin, self.email, self.passwordEntry.get())
+                updateUser(connect().cursor(), self.admin, self.email, self.passwordEntry.get())
             else:
-                updateUser(connect("Zayat").cursor(), self.admin, self.email, self.passwordEntry.get(), self.nameEntry.get(), self.phoneEntry.get())
+                updateUser(connect().cursor(), self.admin, self.email, self.passwordEntry.get(), self.nameEntry.get(), self.phoneEntry.get())
 
-            tkinter.messagebox.showinfo("Profile Editted", "Success")
+            tkinter.messagebox.showinfo("Profile Edited", "Success")
             done = True
 
         else:
             from userSQL import sign_up
-            conn = connect("Zayat")
+            conn = connect()
             if self.adminCheck.get():
                 if sign_up(conn.cursor(), self.eMailEntry.get(), self.passwordEntry.get()):
                     done = True
@@ -151,7 +150,7 @@ class RegisterWindow(customtkinter.CTk):
 
             from connect import connect
             from extra import emailExists
-            if emailExists(connect("Zayat").cursor(), self.eMailEntry.get()):
+            if emailExists(connect().cursor(), self.eMailEntry.get()):
                 return -3
 
             if not self.adminCheck.get():
@@ -185,5 +184,5 @@ class RegisterWindow(customtkinter.CTk):
             app.mainloop()
 
 if __name__ == "__main__":
-    test = RegisterWindow(True, True, "omar")
+    test = RegisterWindow()
     test.mainloop()

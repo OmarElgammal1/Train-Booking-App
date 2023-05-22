@@ -45,7 +45,7 @@ class LogInWindow(customtkinter.CTk):
 
         from connect import connect, close
         from userSQL import sign_in
-        conn = connect("Zayat")
+        conn = connect()
 
         if sign_in(conn.cursor(), self.eMailEntry.get(), self.passwordEntry.get(), self.adminCheck.get()):
             from view import ViewWindow
