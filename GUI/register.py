@@ -44,8 +44,8 @@ class RegisterWindow(customtkinter.CTk):
         self.passwordReEntry = customtkinter.CTkEntry(master=self.formFrame, show="*", placeholder_text="Re-Enter Password", height=40, width=225)
         self.passwordReEntry.place(relx=0.75, rely=0.675, anchor=tkinter.CENTER)
 
-        self.registerButton = customtkinter.CTkButton(master=self.formFrame, text=self.winTitle, command=self.registerFunction, height=40, width=225)
-        self.registerButton.place(relx=0.75, rely=0.9, anchor=tkinter.CENTER)
+        self.registerButton = customtkinter.CTkButton(master=self.formFrame, text=self.winTitle, command=self.registerFunction, height=40, width=100)
+        self.registerButton.place(relx=0.8675, rely=0.9, anchor=tkinter.CENTER)
 
         self.backButton = customtkinter.CTkButton(master=self.formFrame, text="Go Back", command=self.backFunction, height=40, width=80)
         self.backButton.place(relx=0.1, rely=0.9, anchor=tkinter.CENTER)
@@ -53,12 +53,29 @@ class RegisterWindow(customtkinter.CTk):
         if self.edit:
             self.loadData()
 
+            self.deleteButton = customtkinter.CTkButton(master=self.formFrame, text="Delete Account", command=self.deleteUser, height=40, width=100)
+            self.deleteButton.place(relx=0.625, rely=0.9, anchor=tkinter.CENTER)
+
             self.eMailEntry.configure(width=225)    
             self.eMailEntry.place(relx=0.25)
             self.eMailEntry.configure(state="disabled")
             self.adminCheck.destroy()
             self.phoneEntry.configure(width=225)
             self.phoneEntry.place(relx=0.75, rely=0.5, anchor=tkinter.CENTER)
+
+    def deleteUser(self):
+        from deleteSQL import deleteUser
+        from connect import connect
+        
+        if deleteUser(connect().cursor(), self.eMailEntry.get(), self.admin):
+            tkinter.messagebox.showinfo("Success", "Your Account has been deleted.")
+            self.destroy()
+        
+        else:
+            tkinter.messagebox.showinfo("Error", "Can't delete, Account has booked trips.")
+            return
+
+        return
 
     def loadData(self):
 
@@ -187,5 +204,5 @@ class RegisterWindow(customtkinter.CTk):
             app.mainloop()
 
 if __name__ == "__main__":
-    test = RegisterWindow()
+    test = RegisterWindow(True, True, "omar@admin.com")
     test.mainloop()

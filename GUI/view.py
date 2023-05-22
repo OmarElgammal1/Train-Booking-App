@@ -29,7 +29,7 @@ class AdminTripWindow(customtkinter.CTk):
             self.tripNameLabel = customtkinter.CTkLabel(self, text="Trip ID: " + str(tripData[0]), height=16, font=customtkinter.CTkFont(size=16, weight="bold"))
             self.tripNameLabel.place(x=290, y=15, anchor=tkinter.NE)
 
-        self.trainNameLabel = customtkinter.CTkLabel(self, text="Train Name", height=16, font=customtkinter.CTkFont(size=16, weight="bold"))
+        self.trainNameLabel = customtkinter.CTkLabel(self, text="Train Type", height=16, font=customtkinter.CTkFont(size=16, weight="bold"))
         self.trainNameLabel.place(x=12, y=45, anchor=tkinter.NW)
 
         self.trainName = customtkinter.CTkEntry(self, height=20, width=135, font=customtkinter.CTkFont(size=16, weight="bold"))
@@ -65,10 +65,13 @@ class AdminTripWindow(customtkinter.CTk):
         self.priceEntry = customtkinter.CTkEntry(self, height=20, width=90, font=customtkinter.CTkFont(size=16, weight="bold"))
         self.priceEntry.place(x=200, y=165, anchor=tkinter.NW)
 
-        self.exitButton = customtkinter.CTkButton(self, text="Go Back", command=self.destroy, height=40, width=100)
+        self.exitButton = customtkinter.CTkButton(self, text="Go Back", command=self.destroy, height=40, width=80)
         self.exitButton.place(x=10, y=240, anchor=tkinter.SW)
 
-        self.continueButton = customtkinter.CTkButton(self, text=title, height=40, width=100, command=self.continueTrip)
+        self.deleteButton = customtkinter.CTkButton(self, text="Delete", height=40, width=90, command=self.deleteTrip)
+        self.deleteButton.place(x=190, y=240, anchor=tkinter.SE)
+
+        self.continueButton = customtkinter.CTkButton(self, text=title, height=40, width=90, command=self.continueTrip)
         self.continueButton.place(x=290, y=240, anchor=tkinter.SE)
 
         self.loadCheckBox()
@@ -82,7 +85,6 @@ class AdminTripWindow(customtkinter.CTk):
     def adminTripReady(self):
         import re
         from datetime import datetime
-
 
         if self.trainName.get() == "":
             return False
@@ -148,6 +150,19 @@ class AdminTripWindow(customtkinter.CTk):
             trainIDs.append(str(i[0]))
         self.trainID.configure(values=trainIDs)
 
+    def deleteTrip(self):
+        if not self.adminTripReady():
+            tkinter.messagebox.showinfo("Error", "Please check the data you have provided.")
+            return
+        
+        from connect import connect
+        from deleteSQL import deleteTrip
+
+        deleteTrip(connect().cursor(), int(self.tripData[0]))
+        tkinter.messagebox.showinfo("Success", "The trip has been deleted")
+        self.destroy()
+
+
     def continueTrip(self):
 
         if not self.adminTripReady():
@@ -211,9 +226,24 @@ class ViewTripWindow(customtkinter.CTk):
         self.continueButton = customtkinter.CTkButton(self, text="Book Tickets", command=self.book, height=40, width=100)
         self.continueButton.place(x=390, y=140, anchor=tkinter.NE)
 
+    def readyToBook(self):
+        if not self.ticketNum.get().isdigit() and self.ticketNum.get()[0] != '-':
+            return False
+
+        if int(self.ticketNum.get()) < 1:
+            return False
+
+        from extra import availableSeats
+        from connect import connect
+
+        if int(self.ticketNum.get()) > availableSeats(connect().cursor(), int(self.data[0])):
+            return False
+
+        return True
+
     def book(self):
 
-        if not self.ticketNum.get().isdigit() and self.ticketNum.get()[0] != '-':
+        if not self.readyToBook():
             tkinter.messagebox.showinfo("Error", "Please enter a valid amount of tickets")
             return
         
@@ -260,10 +290,13 @@ class TrainWindow(customtkinter.CTk):
         self.trainSeats = customtkinter.CTkEntry(self, height=20, width=135, font=customtkinter.CTkFont(size=16, weight="bold"))
         self.trainSeats.place(x=155, y=65, anchor=tkinter.NW)
 
-        self.exitButton = customtkinter.CTkButton(self, text="Go Back", command=self.destroy, height=40, width=100)
+        self.exitButton = customtkinter.CTkButton(self, text="Go Back", command=self.destroy, height=40, width=80)
         self.exitButton.place(x=10, y=140, anchor=tkinter.SW)
 
-        self.continueButton = customtkinter.CTkButton(self, text=title, height=40, width=100, command=self.addTrain)
+        self.deleteButton = customtkinter.CTkButton(self, text="Delete", command=self.deleteTrain, height=40, width=90)
+        self.deleteButton.place(x=190, y=140, anchor=tkinter.SE)
+
+        self.continueButton = customtkinter.CTkButton(self, text=title, height=40, width=90, command=self.addTrain)
         self.continueButton.place(x=290, y=140, anchor=tkinter.SE)
 
         if self.isEditing:
@@ -321,6 +354,28 @@ class TrainWindow(customtkinter.CTk):
             tkinter.messagebox.showinfo("Train Added", "Success")
 
         self.destroy()
+
+    def deleteTrain(self):
+        if not self.trainReady():
+            tkinter.messagebox.showinfo("Error", "Please check the info you have provided.")
+            return
+        
+        from connect import connect
+        from extra import trainFree
+
+        if not trainFree(connect().cursor(), int(self.trainID.get())):
+            tkinter.messagebox.showinfo("Error", "The train has trips, please delete those first.")
+            self.destroy()
+            return
+
+        from deleteSQL import deleteTrain
+
+        if deleteTrain(connect().cursor(), int(self.trainID.get())):
+            tkinter.messagebox.showinfo("Success", "The Train has been deleted.")
+            self.destroy()
+        else:
+            tkinter.messagebox.showinfo("Error", "Please check the info you have provided")
+            self.destroy()
 
 class ScrollableFrame(customtkinter.CTkScrollableFrame):
 
@@ -580,6 +635,6 @@ class ViewWindow(customtkinter.CTk):
         self.loadData()
 
 if __name__ == "__main__":
-    test = ViewWindow()
-    test = ViewWindow("salah@gmail.com")
+    test = ViewWindow("omar@admin.com", True)
+    # test = ViewWindow("salah@gmail.com")
     test.mainloop()
