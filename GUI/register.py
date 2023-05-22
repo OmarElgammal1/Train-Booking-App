@@ -122,10 +122,10 @@ class RegisterWindow(customtkinter.CTk):
             from userSQL import sign_up
             conn = connect("Zayat")
             if self.adminCheck.get():
-                if sign_up(conn, conn.cursor(), self.eMailEntry.get(), self.passwordEntry.get()):
+                if sign_up(conn.cursor(), self.eMailEntry.get(), self.passwordEntry.get()):
                     done = True
             else:
-                if sign_up(conn, conn.cursor(), self.eMailEntry.get(), self.passwordEntry.get(), self.nameEntry.get(), self.phoneEntry.get()):
+                if sign_up(conn.cursor(), self.eMailEntry.get(), self.passwordEntry.get(), self.nameEntry.get(), self.phoneEntry.get()):
                     done = True
                 tkinter.messagebox.showinfo("Profile Created", "Success")
 
