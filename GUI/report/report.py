@@ -53,7 +53,7 @@ def topTripsWithMostProfit(cursor):
             trp.toLocation,
             trp.price,
             trn.seatCount
-        HAVING COUNT(st.tripID) > 0
+        HAVING (trp.price * (trn.seatCount - COUNT(st.tripID))) > 0
         ORDER BY Profit DESC; """
     # Run the query and get the results into a list
     results = pnda.DataFrame(cursor.execute(query)).values.tolist()
@@ -103,7 +103,7 @@ def profitPerTrip(cursor):
     # Run the query and get the results into a list
     results = pnda.DataFrame(cursor.execute(query)).values.tolist()
     # Parse the resulting list into 5 lists after header
-    finalList = [["Trip ID", "Source", "Destination", "Price", "Empty Seats"]]
+    finalList = [["Trip ID", "Source", "Destination", "Profit", "Empty Seats"]]
     for r in results:
         finalList.append(list(r[0]))
     # Return a list of 5 lists, each list contains exactly five values
@@ -149,7 +149,7 @@ def generateReport(cursor):
         ("TEXTCOLOR", (0, 0), (-1, 0), "black"),  # Text color for header row
         ("ALIGN", (0, 0), (-1, -1), "CENTER"),  # Center alignment for all cells
         ("FONTNAME", (0, 1), (-1, -1), "Helvetica"),  # Font for data rows
-        ("FONTSIZE", (0, 1), (-1, -1), 14),  # Font size for data rows
+        ("FONTSIZE", (0, 1), (-1, -1), 12),  # Font size for data rows
         ("BOTTOMPADDING", (0, 0), (-1, 0), 12),  # Bottom padding for header row
         ("BACKGROUND", (0, 1), (-1, -1), "white"),  # Background color for data rows
         ("GRID", (0, 0), (-1, -1), 0.5, "black"),  # Grid lines
