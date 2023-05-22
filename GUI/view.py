@@ -330,6 +330,7 @@ class ScrollableFrame(customtkinter.CTkScrollableFrame):
         self.grid_columnconfigure((0,1,6,7,8), weight=1)
         self.grid_columnconfigure((2,3), weight=4)
         self.grid_columnconfigure((4,5), weight=1)
+        self.myFont = customtkinter.CTkFont(family="Segoe UI", size=16)
         self.command = command
         self.labelList = []
         self.buttonList = []
@@ -337,15 +338,15 @@ class ScrollableFrame(customtkinter.CTkScrollableFrame):
         self.isAdmin = isAdmin
         
     def addItem(self, item):
-        tripLabel = customtkinter.CTkLabel(self, text=item[0], compound="left", font=customtkinter.CTkFont(size=12))
-        trainLabel = customtkinter.CTkLabel(self, text=item[1], compound="left", font=customtkinter.CTkFont(size=12))
-        fromLabel = customtkinter.CTkLabel(self, text=item[2], compound="left", font=customtkinter.CTkFont(size=12))
-        toLabel = customtkinter.CTkLabel(self, text=item[3], compound="left", font=customtkinter.CTkFont(size=12))
-        dateLabel = customtkinter.CTkLabel(self, text=item[4], compound="left", font=customtkinter.CTkFont(size=12))
-        timeLabel = customtkinter.CTkLabel(self, text=item[5], compound="left", font=customtkinter.CTkFont(size=12))
-        seatsLabel = customtkinter.CTkLabel(self, text=item[6], compound="left", font=customtkinter.CTkFont(size=12))
-        priceLabel = customtkinter.CTkLabel(self, text=item[7], compound="right", font=customtkinter.CTkFont(size=12))
-        button = customtkinter.CTkButton(self, text="View", width=69, compound="right", height=30)
+        tripLabel = customtkinter.CTkLabel(self, text=item[0], compound="left", font=self.myFont)
+        trainLabel = customtkinter.CTkLabel(self, text=item[1], compound="left", font=self.myFont)
+        fromLabel = customtkinter.CTkLabel(self, text=item[2], compound="left", font=self.myFont)
+        toLabel = customtkinter.CTkLabel(self, text=item[3], compound="left", font=self.myFont)
+        dateLabel = customtkinter.CTkLabel(self, text=item[4], compound="left", font=self.myFont)
+        timeLabel = customtkinter.CTkLabel(self, text=item[5], compound="left", font=self.myFont)
+        seatsLabel = customtkinter.CTkLabel(self, text=item[6], compound="left", font=self.myFont)
+        priceLabel = customtkinter.CTkLabel(self, text=item[7], compound="right", font=self.myFont)
+        button = customtkinter.CTkButton(self, text="View", font=self.myFont, width=69, compound="right", height=30)
 
         if self.email=="":
             button.configure(state="disabled", fg_color="#042970")
