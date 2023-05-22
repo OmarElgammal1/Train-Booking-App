@@ -25,7 +25,17 @@ def deleteTrain(cursor, trainID):
     return True
 
 # Delete certain user by email
-def deleteUser(cursor, email):
-    cursor.execute(f" DELETE FROM [USER] WHERE [USER].email = '{email}' ")
+def deleteUser(cursor, email, isAdmin):
+    if not isAdmin:
+        cursor.execute(f"""
+            SELECT customerID FROM SEAT
+            WHERE customerID = (
+                SELECT customerID FROM CUSTOMER
+                WHERE email = '{email}'); """)
+        # If the user has trips allocated to him/her cannot delete, return False
+        if cursor.fetchone() is not None:
+            return False
+    # Otherwise, the user is free then delete, return True
+    cursor.execute(f" DELETE FROM [USER] WHERE [USER].email = '{email}'; ")
     cursor.commit()
     return True
