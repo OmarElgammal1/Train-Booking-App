@@ -19,7 +19,12 @@ Project 3 which is the train booking program is capable of organizing passengers
 
 ## Instructions
 
-> Before attempting to work on anything, download the required packages first via the following command:
+1. Before attempting to work on anything, download the required packages first via the following command:
 > ```bash
 > python -m pip install -r requirements.txt
 > ```
+
+2. Run TrainBooking.sql on your server to create the database
+3. Enter your server name instead of "YOUR_SERVER_NAME" in GUI/connect.py line 10
+4. Run app.py
+
