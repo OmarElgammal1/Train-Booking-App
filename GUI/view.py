@@ -115,8 +115,8 @@ class AdminTripWindow(customtkinter.CTk):
         if self.tripData != []:
             print(self.tripData)
             depTime = self.tripData[4][2:].replace('-', '/') + " " + self.tripData[5]
-            self.toEntry.insert(0, self.tripData[2])
-            self.fromEntry.insert(0, self.tripData[3])
+            self.toEntry.insert(0, self.tripData[3])
+            self.fromEntry.insert(0, self.tripData[2])
             self.depTimeEntry.insert(0, depTime)
             self.priceEntry.insert(0, self.tripData[7])
             self.loadData(self.tripData[1])
